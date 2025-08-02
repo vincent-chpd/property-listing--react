@@ -8,12 +8,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton, useUser } from '@clerk/nextjs'
 
-const Headers = () => {
+const Header = () => {
   const path = usePathname();
   const {user, isSignedIn } = useUser();
 
   useEffect(() => {
-    console.log("Current path:", path);
   }, [ path ]);
 
   return (
@@ -32,9 +31,11 @@ const Headers = () => {
         </ul>
       </div>
       <div className='flex gap-2 items-center'>
-        <Button>
-          <Plus className='h-5 w-5'/> Post Your Ad
-        </Button>
+        <Link href="/add-new-listing">
+          <Button>
+            <Plus className='h-5 w-5'/> Post Your Ad
+          </Button>
+        </Link>
         {isSignedIn ? (
           <UserButton />
         ) : (
@@ -47,4 +48,4 @@ const Headers = () => {
   )
 }
 
-export default Headers
+export default Header

@@ -112,11 +112,22 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.cl-formButtonPrimary {
+  background-color: #f17171;
+  box-shadow: none;
+}
+
+.cl-formButtonPrimary:hover {
+  background-color: #b4b4b4;
+  box-shadow: none;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
+    font-family: var(--poppins), sans-serif;
     @apply bg-background text-foreground;
   }
 }

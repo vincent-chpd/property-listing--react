@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from 'next/font/google'
 import "./globals.css";
 import Provider from "./Provider";
 import { ClerkProvider } from '@clerk/nextjs'
+import { Toaster } from "@/components/ui/sonner"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--poppins",
+  weight: ['400', '500', '600', '700'],
   subsets: ["latin"],
 });
 
@@ -23,8 +26,9 @@ export default function RootLayout({ children }: {children: React.ReactNode;}) {
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body className={`${poppins.variable} antialiased`}>
           <Provider>
+            <Toaster position="top-right" />
             {children}
           </Provider>
         </body>
