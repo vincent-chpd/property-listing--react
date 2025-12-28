@@ -1,8 +1,10 @@
+import Image from 'next/image';
+import ListingMapView from './_components/ListingMapView';
 
 export default function Home() {
   return (
-    <div className="bg-background text-foreground font-sans">
-
+    <div className="px-10 p-10">
+      <ListingMapView type='Rent'/>
     </div>
   );
 }
