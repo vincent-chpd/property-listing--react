@@ -1,16 +1,16 @@
-"use client";
-import React, { useEffect, use, useState } from 'react'
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+'use client';
+import React, { useEffect, use, useState } from 'react';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,17 +21,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Formik } from 'formik'
+} from '@/components/ui/alert-dialog';
+import { Formik } from 'formik';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/utils/supabase/client'
+import { supabase } from '@/utils/supabase/client';
 import { toast } from 'sonner';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import FileUpload from '../_components/FileUpload';
 import { Loader } from 'lucide-react';
 
-export type ListingType= {
+export type ListingType = {
   type: string;
   active?: boolean;
   propertyType: string;
@@ -49,7 +49,7 @@ export type ListingType= {
   profilePicture?: string;
   listingImages?: { url: string }[];
   address: string;
-}
+};
 
 interface EditListingProps {
   params: Promise<{ id: string }>;
@@ -77,7 +77,7 @@ const EditListing = ({ params }: EditListingProps) => {
         .eq('id', resolvedParams.id);
 
       if (data && data.length > 0) {
-        console.log(data)
+        console.log(data);
         setListing(data[0]);
       } else {
         router.replace('/');
@@ -85,72 +85,74 @@ const EditListing = ({ params }: EditListingProps) => {
     };
 
     verifyUserRecord();
-  }, [user.user,user.isSignedIn, resolvedParams, router]);
+  }, [user.user, user.isSignedIn, resolvedParams, router]);
 
-  const onSubmitHandler = async(formValue: ListingType) => {
+  const onSubmitHandler = async (formValue: ListingType) => {
     setIsLoading(true);
 
     const cleanValue = {
-        ...formValue,
-        bedroom: formValue.bedroom ? Number(formValue.bedroom) : null,
-        bathroom: formValue.bathroom ? Number(formValue.bathroom) : null,
-        reception: formValue.reception ? Number(formValue.reception) : null,
-        size: formValue.size ? Number(formValue.size) : null,
-        sellingPrice: formValue.sellingPrice ? Number(formValue.sellingPrice) : null,
-        rentingPrice: formValue.rentingPrice ? Number(formValue.rentingPrice) : null,
-        active: formValue.active || false,
-      };
+      ...formValue,
+      bedroom: formValue.bedroom ? Number(formValue.bedroom) : null,
+      bathroom: formValue.bathroom ? Number(formValue.bathroom) : null,
+      reception: formValue.reception ? Number(formValue.reception) : null,
+      size: formValue.size ? Number(formValue.size) : null,
+      sellingPrice: formValue.sellingPrice
+        ? Number(formValue.sellingPrice)
+        : null,
+      rentingPrice: formValue.rentingPrice
+        ? Number(formValue.rentingPrice)
+        : null,
+      active: formValue.active || false,
+    };
 
     const { data, error } = await supabase
       .from('listing')
       .update(cleanValue)
       .eq('id', resolvedParams.id)
-      .select()
+      .select();
 
-      if(data){
-        toast.success("Listing updated successfully!");
-        setIsLoading(false);
-        setIsSaving(false);
-        setIsSavingAndPublishing(false);
+    if (data) {
+      toast.success('Listing updated successfully!');
+      setIsLoading(false);
+      setIsSaving(false);
+      setIsSavingAndPublishing(false);
+    }
+
+    for (const image of images) {
+      const file = image;
+
+      const fileName = Date.now().toString();
+
+      const fileExtension = file.name.split('.').pop();
+
+      const { data, error } = await supabase.storage
+        .from('listing-images')
+        .upload(`${fileName}`, file, {
+          contentType: `image/${fileExtension}`,
+          upsert: false,
+        });
+
+      if (data) {
+        console.log('Image uploaded successfully:', data);
       }
 
-      for ( const image of images) {
-        const file = image;
-
-        const fileName = Date.now().toString();
-
-        const fileExtension = file.name.split('.').pop();
-
-        const {data, error} = await supabase.storage
-          .from('listing-images')
-          .upload(`${fileName}`, file, {
-            contentType: `image/${fileExtension}`,
-            upsert: false
-          });
-
-        if(data){
-          console.log("Image uploaded successfully:", data);
-        }
-
-        if(data) {
-          const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
-          const {data, error} = await supabase
-            .from('listingImages')
-            .insert([
-              { url: imageUrl, listing_id: resolvedParams.id}
-            ])
-            .select();
-        }
-
-        if(error){
-          toast.error(`Error uploading image ${fileName}. Please try again.`);
-          return;
-        }
-
-        setIsLoading(false);
-        setIsSaving(false);
-        setIsSavingAndPublishing(false);
+      if (data) {
+        const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
+        const { data, error } = await supabase
+          .from('listingImages')
+          .insert([{ url: imageUrl, listing_id: resolvedParams.id }])
+          .select();
       }
+
+      if (error) {
+        toast.error(`Error uploading image ${fileName}. Please try again.`);
+        return;
+      }
+
+      setIsLoading(false);
+      setIsSaving(false);
+      setIsSavingAndPublishing(false);
+    }
   };
 
   const handlePublish = async () => {
@@ -159,61 +161,61 @@ const EditListing = ({ params }: EditListingProps) => {
       .from('listing')
       .update({ active: true })
       .eq('id', resolvedParams.id)
-      .select()
+      .select();
 
-      if (data) {
-        setIsLoading(false);
-        setIsSavingAndPublishing(false);
-        toast.success("Listing published successfully!");
-      }
+    if (data) {
+      setIsLoading(false);
+      setIsSavingAndPublishing(false);
+      toast.success('Listing published successfully!');
+    }
 
-      if(error){
-        setIsLoading(false);
-        setIsSavingAndPublishing(false);
-        toast.error("Error publishing listing. Please try again.");
-      }
-  }
+    if (error) {
+      setIsLoading(false);
+      setIsSavingAndPublishing(false);
+      toast.error('Error publishing listing. Please try again.');
+    }
+  };
 
   return (
-    <div className='px-10 md:px-36 my-10'>
-      <h2 className="font-bold text-xl">Enter more details about your listing</h2>
+    <div className="px-10 md:px-36 my-10">
+      <h2 className="font-bold text-xl">
+        Enter more details about your listing
+      </h2>
       <Formik
         enableReinitialize={true}
         initialValues={{
-          type: listing?.type || "",
-          propertyType: listing?.propertyType || "",
+          type: listing?.type || '',
+          propertyType: listing?.propertyType || '',
           bedroom: listing?.bedroom || null,
           bathroom: listing?.bathroom || null,
           reception: listing?.reception || null,
-          parking: listing?.parking || "",
-          garden: listing?.garden || "",
-          balcony: listing?.balcony || "",
+          parking: listing?.parking || '',
+          garden: listing?.garden || '',
+          balcony: listing?.balcony || '',
           size: listing?.size || null,
-          tenure: listing?.tenure || "",
+          tenure: listing?.tenure || '',
           sellingPrice: listing?.sellingPrice || null,
           rentingPrice: listing?.rentingPrice || null,
-          description: listing?.description || "",
-          profilePicture: user.user?.imageUrl || "",
-          fullName: user.user?.fullName || "",
-          address: listing?.address || "",
+          description: listing?.description || '',
+          profilePicture: user.user?.imageUrl || '',
+          fullName: user.user?.fullName || '',
+          address: listing?.address || '',
           active: listing?.active || false,
         }}
         onSubmit={(values) => {
-          onSubmitHandler(values)
+          onSubmitHandler(values);
         }}
       >
-        {({
-          values,
-          handleChange,
-          handleSubmit,
-          setFieldValue
-        }) => (
+        {({ values, handleChange, handleSubmit, setFieldValue }) => (
           <form onSubmit={handleSubmit}>
-            <div className='p-8 rounded-lg shadow-md mt-4'>
-              <div className='grid grid-cols-1 md:grid-cols-3'>
-                <div className='flex flex-col gap-2'>
+            <div className="p-8 rounded-lg shadow-md mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-3">
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Rent or Sell</h2>
-                  <RadioGroup value={values.type} onValueChange={(e) => setFieldValue('type', e)}>
+                  <RadioGroup
+                    value={values.type}
+                    onValueChange={(e) => setFieldValue('type', e)}
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Rent" id="rent" />
                       <Label htmlFor="rent">Rent</Label>
@@ -224,7 +226,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     </div>
                   </RadioGroup>
                 </div>
-                <div className='flex flex-col gap-2 mt-10 md:mt-0'>
+                <div className="flex flex-col gap-2 mt-10 md:mt-0">
                   <h2 className="text-sm text-slate-500">Property Type</h2>
                   <Select
                     name="propertyType"
@@ -235,9 +237,15 @@ const EditListing = ({ params }: EditListingProps) => {
                       <SelectValue placeholder="Select Property Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Terraced House">Terraced House</SelectItem>
-                      <SelectItem value="Semi-Detached House">Semi-Detached House</SelectItem>
-                      <SelectItem value="Detached House">Detached House</SelectItem>
+                      <SelectItem value="Terraced House">
+                        Terraced House
+                      </SelectItem>
+                      <SelectItem value="Semi-Detached House">
+                        Semi-Detached House
+                      </SelectItem>
+                      <SelectItem value="Detached House">
+                        Detached House
+                      </SelectItem>
                       <SelectItem value="Bungalow">Bungalow</SelectItem>
                       <SelectItem value="Flat">Flat</SelectItem>
                       <SelectItem value="Cottage">Cottage</SelectItem>
@@ -247,8 +255,8 @@ const EditListing = ({ params }: EditListingProps) => {
                   </Select>
                 </div>
               </div>
-              <div className='grid grid-cols-1 md:grid-cols-3 mt-10 gap-8'>
-                <div className='flex flex-col gap-2'>
+              <div className="grid grid-cols-1 md:grid-cols-3 mt-10 gap-8">
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Bedroom</h2>
                   <Input
                     onChange={handleChange}
@@ -258,7 +266,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     min="0"
                   />
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Bathroom</h2>
                   <Input
                     onChange={handleChange}
@@ -268,7 +276,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     min="0"
                   />
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Reception</h2>
                   <Input
                     onChange={handleChange}
@@ -279,8 +287,8 @@ const EditListing = ({ params }: EditListingProps) => {
                   />
                 </div>
               </div>
-              <div className='grid grid-cols-1 md:grid-cols-3 mt-10 gap-8'>
-                <div className='flex flex-col gap-2'>
+              <div className="grid grid-cols-1 md:grid-cols-3 mt-10 gap-8">
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Parking</h2>
                   <Select
                     name="parking"
@@ -296,7 +304,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Garden</h2>
                   <Select
                     name="garden"
@@ -312,7 +320,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Balcony</h2>
                   <Select
                     name="balcony"
@@ -328,7 +336,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Size (Sq ft)</h2>
                   <Input
                     name="size"
@@ -337,7 +345,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     type="number"
                   />
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Tenure</h2>
                   <Select
                     name="tenure"
@@ -353,7 +361,7 @@ const EditListing = ({ params }: EditListingProps) => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <h2 className="text-sm text-slate-500">Selling Price (£)</h2>
                   <Input
                     onChange={handleChange}
@@ -362,8 +370,10 @@ const EditListing = ({ params }: EditListingProps) => {
                     name="sellingPrice"
                   />
                 </div>
-                <div className='flex flex-col gap-2'>
-                  <h2 className="text-sm text-slate-500">Renting Price (Monthly)(£)</h2>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-sm text-slate-500">
+                    Renting Price (Monthly)(£)
+                  </h2>
                   <Input
                     onChange={handleChange}
                     value={values.rentingPrice || ''}
@@ -373,7 +383,7 @@ const EditListing = ({ params }: EditListingProps) => {
                   />
                 </div>
               </div>
-              <div className='flex flex-col gap-2 mt-8'>
+              <div className="flex flex-col gap-2 mt-8">
                 <h2 className="text-sm text-slate-500">Description</h2>
                 <Textarea
                   onChange={handleChange}
@@ -382,41 +392,51 @@ const EditListing = ({ params }: EditListingProps) => {
                   name="description"
                 />
               </div>
-              <div className='mt-8'>
-                <h2 className='font-lg text-gray-500 my-2'>Upload Property Images</h2>
+              <div className="mt-8">
+                <h2 className="font-lg text-gray-500 my-2">
+                  Upload Property Images
+                </h2>
                 <FileUpload
-                  setImages={(value) => setImages(value ? Array.from(value) : [])}
+                  setImages={(value) =>
+                    setImages(value ? Array.from(value) : [])
+                  }
                   imageList={listing?.listingImages || []}
                 />
               </div>
-              <div className='flex gap-4 justify-end'>
+              <div className="flex gap-4 justify-end">
                 <Button
                   disabled={isLoading}
-                  onClick={() => {setIsSaving(true)}}
+                  onClick={() => {
+                    setIsSaving(true);
+                  }}
                   type="submit"
-                  variant='outline'
-                  className='font-bold text-primary border-primary hover:text-primary hover:bg-primary/5'
+                  variant="outline"
+                  className="font-bold text-primary border-primary hover:text-primary hover:bg-primary/5"
                 >
                   {isLoading && isSaving ? (
                     <>
-                      <Loader className='animate-spin'/>
+                      <Loader className="animate-spin" />
                       Saving...
                     </>
-                  ) : "Save"}
+                  ) : (
+                    'Save'
+                  )}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       disabled={isLoading}
                       type="button"
-                      className='font-bold cursor-pointer'
+                      className="font-bold cursor-pointer"
                     >
                       {isLoading && isSavingAndPublishing ? (
                         <>
-                          <Loader className='animate-spin'/>
+                          <Loader className="animate-spin" />
                           Publishing...
                         </>
-                      ) : "Save & Publish"}
+                      ) : (
+                        'Save & Publish'
+                      )}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -429,13 +449,20 @@ const EditListing = ({ params }: EditListingProps) => {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        className='cursor-pointer'
-                        onClick={() => {setIsSavingAndPublishing(true);
-                        values.active = true;
-                        handleSubmit();
-                      }}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setIsSavingAndPublishing(true);
+                          values.active = true;
+                          handleSubmit();
+                        }}
                       >
-                        {isLoading ? <><Loader className='animate-spin'/> Publishing</> : 'Publish'}
+                        {isLoading ? (
+                          <>
+                            <Loader className="animate-spin" /> Publishing
+                          </>
+                        ) : (
+                          'Publish'
+                        )}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -446,7 +473,7 @@ const EditListing = ({ params }: EditListingProps) => {
         )}
       </Formik>
     </div>
-  )
-}
+  );
+};
 
-export default EditListing
+export default EditListing;
