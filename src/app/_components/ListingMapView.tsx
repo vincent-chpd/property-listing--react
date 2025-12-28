@@ -8,8 +8,19 @@ import { toast } from 'sonner';
 type ListingMapViewProps = {
   type: 'Sale' | 'Rent';
 };
+
+type SearchedAddress = {
+  value: {
+    description: string;
+    structured_formatting: {
+      main_text: string;
+      secondary_text: string;
+    };
+  };
+};
 const ListingMapView = ({ type }: ListingMapViewProps) => {
   const [listings, setListings] = useState<ListingType[]>([]);
+  const [searchedAddress, setSearchedAddress] = useState<SearchedAddress>();
 
   useEffect(() => {
     getLatestListings();
@@ -33,10 +44,34 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
     }
   };
 
+  const handleSearchClick = async () => {
+    const searchTerm = searchedAddress?.value?.structured_formatting.main_text;
+
+    const { data, error } = await supabase
+      .from('listing')
+      .select('*, listingImages(url, listing_id)')
+      .eq('active', true)
+      .eq('type', type)
+      .like('address', `%${searchTerm}%`)
+      .order('id', { ascending: false });
+
+    if (data) {
+      setListings(data);
+    }
+
+    if (error) {
+      toast.error('Error fetching listings');
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2">
       <div>
-        <Listing listings={listings} />
+        <Listing
+          listings={listings}
+          handleSearchClick={handleSearchClick}
+          searchedAddress={(value) => setSearchedAddress(value)}
+        />
       </div>
       <div>Map</div>
     </div>
