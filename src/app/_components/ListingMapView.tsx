@@ -4,6 +4,7 @@ import Listing from './Listing';
 import { supabase } from '@/utils/supabase/client';
 import { ListingType } from '../(routes)/edit-listing/[id]/page';
 import { toast } from 'sonner';
+import GoogleMapSection from './GoogleMapSection';
 
 type ListingMapViewProps = {
   type: 'Sale' | 'Rent';
@@ -18,9 +19,14 @@ type SearchedAddress = {
     };
   };
 };
+
 const ListingMapView = ({ type }: ListingMapViewProps) => {
   const [listings, setListings] = useState<ListingType[]>([]);
   const [searchedAddress, setSearchedAddress] = useState<SearchedAddress>();
+  const [coordinates, setCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   useEffect(() => {
     getLatestListings();
@@ -71,9 +77,12 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
           listings={listings}
           handleSearchClick={handleSearchClick}
           searchedAddress={(value) => setSearchedAddress(value)}
+          setCoordinates={setCoordinates}
         />
       </div>
-      <div>Map</div>
+      <div>
+        <GoogleMapSection coordinates={coordinates} />
+      </div>
     </div>
   );
 };

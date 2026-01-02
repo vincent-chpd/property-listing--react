@@ -10,6 +10,7 @@ type ListingProps = {
   handleSearchClick: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   searchedAddress: (value: any) => void;
+  setCoordinates: (coords: { lat: number; lng: number } | null) => void;
 };
 
 type Address = {
@@ -20,6 +21,7 @@ const Listing = ({
   listings,
   handleSearchClick,
   searchedAddress,
+  setCoordinates,
 }: ListingProps) => {
   const [address, setAddress] = React.useState<Address | null>(null);
 
@@ -31,7 +33,7 @@ const Listing = ({
             searchedAddress(value);
             setAddress(value);
           }}
-          setCoordinates={(v) => console.log(v)}
+          setCoordinates={setCoordinates}
         />
         <Button
           className="flex gap-2 cursor-pointer"

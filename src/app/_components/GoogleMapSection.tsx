@@ -1,64 +1,41 @@
 'use client';
-
-import React from 'react';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import React, { useEffect } from 'react';
+import { GoogleMap } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '100%',
   height: '80vh',
-  borderRadius: '8px',
+  borderRadius: 10,
 };
 
-const center = {
-  lat: 51.5075,
-  lng: 0.1276,
+type GoogleMapSectionProps = {
+  coordinates: {
+    lat: number;
+    lng: number;
+  } | null;
 };
 
-// Define libraries outside component to prevent re-creation
-const libraries: ('places' | 'drawing' | 'geometry' | 'visualization')[] = [];
-
-const GoogleMapSection = () => {
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_PLACE_API_KEY || '',
-    libraries, // Add this to stabilize the loader
-    preventGoogleFontsLoading: true, // Optional: prevents loading Google fonts
+const GoogleMapSection = ({ coordinates }: GoogleMapSectionProps) => {
+  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+  const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
+    lat: 37.7749,
+    lng: -122.4194,
   });
 
-  const [map, setMap] = React.useState<google.maps.Map | null>(null);
-
-  const onLoad = React.useCallback((map: google.maps.Map) => {
-    setMap(map);
-  }, []);
-
-  const onUnmount = React.useCallback(() => {
-    setMap(null);
-  }, []);
-
-  if (loadError) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        Error loading maps
-      </div>
-    );
-  }
-
-  if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        Loading maps...
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (coordinates && map) {
+      setCenter(coordinates);
+    }
+  }, [coordinates, map]);
 
   return (
     <div className="h-full w-full">
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={center}
-        zoom={10}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
+        zoom={12}
+        center={coordinates || center}
+        onLoad={setMap}
+        onUnmount={() => setMap(null)}
         options={{
           zoomControl: true,
           streetViewControl: false,
