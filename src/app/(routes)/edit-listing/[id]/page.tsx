@@ -34,6 +34,8 @@ import { Loader } from 'lucide-react';
 export type ListingType = {
   id?: number;
   title?: string;
+  fullName?: string;
+  createdBy?: string;
   type: string;
   active?: boolean;
   propertyType: string;

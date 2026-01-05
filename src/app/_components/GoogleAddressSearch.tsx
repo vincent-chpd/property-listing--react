@@ -41,7 +41,7 @@ const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
         selectProps={{
           placeholder: 'Search for an address',
           isClearable: true,
-          className: 'w-full',
+          className: 'w-full rounded-lg',
           onChange: (place) => {
             selectedAddress(place);
             if (place) {

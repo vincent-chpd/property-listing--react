@@ -35,8 +35,8 @@ const ViewListing = ({ params }: ViewListingProps) => {
   };
 
   return (
-    <div className="px-4 md:px-32 lg:px-120 my-3">
-      <h1 className="text-2xl font-bold mb-2">{listingDetails?.title}</h1>
+    <div className="px-4 md:px-120  my-3">
+      <h1 className="text-2xl font-bold mb-4">{listingDetails?.title}</h1>
       <Slider imageList={listingDetails?.listingImages} />
       <Details listingDetails={listingDetails} />
     </div>

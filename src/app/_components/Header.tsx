@@ -24,16 +24,23 @@ const Header = () => {
           <Link href={'/'}>
             <li
               className={`hover:text-primary font-medium text-sm cursor-pointer py-4 ${
-                path === '/' &&
-                'text-primary font-semibold border-b-4 border-red-200'
+                path === '/' && 'text-primary font-semibold '
               }`}
             >
               For Rent
             </li>
           </Link>
-          <li className="hover:text-primary font-medium text-sm cursor-pointer">
-            For Sales
-          </li>
+
+          <Link href={'/for-sale'}>
+            <li
+              className={`hover:text-primary font-medium text-sm cursor-pointer py-4 ${
+                path === '/for-sale' && 'text-primary font-semibold '
+              }`}
+            >
+              For Sales
+            </li>
+          </Link>
+
           <li className="hover:text-primary font-medium text-sm cursor-pointer">
             Agent Finder
           </li>
@@ -46,10 +53,18 @@ const Header = () => {
           </Button>
         </Link>
         {isSignedIn ? (
-          <UserButton />
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: '!w-11 !h-11',
+              },
+            }}
+          />
         ) : (
           <Link href="/sign-in">
-            <Button variant="outline">Login</Button>
+            <Button variant="outline" className="cursor-pointer">
+              Login
+            </Button>
           </Link>
         )}
       </div>

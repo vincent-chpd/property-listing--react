@@ -28,7 +28,7 @@ const Listing = ({
 
   return (
     <div>
-      <div className="p-3 flex gap-6 items-center">
+      <div className="p-3 flex gap-2 items-center">
         <GoogleAddressSearch
           selectedAddress={(value) => {
             searchedAddress(value);

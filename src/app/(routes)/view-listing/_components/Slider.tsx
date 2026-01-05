@@ -14,25 +14,29 @@ type SliderProps = {
 
 const Slider = ({ imageList }: SliderProps) => {
   return (
-    <div>
+    <div className="flex">
       {imageList ? (
-        <Carousel>
-          <CarouselContent>
-            {imageList.map((image, index) => (
-              <CarouselItem key={index}>
-                <Image
-                  src={image.url}
-                  alt={`Listing Image ${index + 1}`}
-                  width={800}
-                  height={300}
-                  className="object-cover rounded-lg h-[300px]"
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+        <>
+          <div>
+            <Carousel>
+              <CarouselContent>
+                {imageList.map((image, index) => (
+                  <CarouselItem key={index}>
+                    <Image
+                      src={image.url}
+                      alt={`Listing Image ${index + 1}`}
+                      width={800}
+                      height={300}
+                      className="object-cover rounded-lg h-[300px] cursor-grab"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="cursor-pointer" />
+              <CarouselNext className="cursor-pointer" />
+            </Carousel>
+          </div>
+        </>
       ) : (
         <div className="w-full h-[200px] bg-slate-200 animate-pulse rounded-lg"></div>
       )}

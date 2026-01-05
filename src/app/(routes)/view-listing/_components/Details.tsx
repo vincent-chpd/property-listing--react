@@ -3,6 +3,7 @@ import { ListingType } from '../../../(routes)/edit-listing/[id]/page';
 import { BedDouble, HouseIcon, MapPin, Ruler, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import GoogleMapSection from '@/app/_components/GoogleMapSection';
+import AgentDetails from './AgentDetails';
 
 type DetailsProps = {
   listingDetails: ListingType | undefined;
@@ -12,7 +13,7 @@ const Details = ({ listingDetails }: DetailsProps) => {
   if (!listingDetails) return null;
 
   return (
-    <div className="my-6 flex flex-col gap-2">
+    <div className="my-6 flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="font-bold text-xl">
@@ -25,7 +26,7 @@ const Details = ({ listingDetails }: DetailsProps) => {
             {listingDetails.address}
           </h2>
         </div>
-        <Button className="flex gap-2 items-center">
+        <Button className="flex gap-2 items-center cursor-pointer">
           <Share /> Share
         </Button>
       </div>
@@ -57,14 +58,17 @@ const Details = ({ listingDetails }: DetailsProps) => {
         <h2 className="font-bold text-xl">Description</h2>
         <p>{listingDetails.description}</p>
       </div>
-
-      <hr />
-
-      <h2 className="font-bold text-xl">Find On Map</h2>
-      <GoogleMapSection
-        coordinates={listingDetails.coordinates ?? null}
-        listings={[listingDetails]}
-      />
+      <div>
+        <h2 className="font-bold text-xl mb-4">Find On Map</h2>
+        <GoogleMapSection
+          coordinates={listingDetails.coordinates ?? null}
+          listings={[listingDetails]}
+        />
+      </div>
+      <div>
+        <h2 className="font-bold text-xl mb-4">Contact Agent</h2>
+        <AgentDetails listingDetails={listingDetails} />
+      </div>
     </div>
   );
 };

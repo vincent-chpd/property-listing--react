@@ -3,6 +3,7 @@ import { ListingType } from '../(routes)/edit-listing/[id]/page';
 import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 type MarkerListingItemProps = {
   item: ListingType;
@@ -42,9 +43,11 @@ const MarkerListingItem = ({ item, closeHandler }: MarkerListingItemProps) => {
             {item?.bathroom}
           </h2>
         </div>
-        <Button className="w-full" size="sm">
-          View Details
-        </Button>
+        <Link href={`/view-listing/${item.id}`}>
+          <Button className="w-full cursor-pointer" size="sm">
+            View Details
+          </Button>
+        </Link>
       </div>
     </div>
   );
