@@ -41,7 +41,6 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
       .order('id', { ascending: false });
 
     if (data) {
-      console.log(data);
       setListings(data);
     }
 
@@ -81,7 +80,7 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
         />
       </div>
       <div>
-        <GoogleMapSection coordinates={coordinates} />
+        <GoogleMapSection coordinates={coordinates} listings={listings} />
       </div>
     </div>
   );

@@ -1,6 +1,9 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ListingType } from '../(routes)/edit-listing/[id]/page';
+
 import { GoogleMap } from '@react-google-maps/api';
+import MarkerItem from './MarkerItem';
 
 const containerStyle = {
   width: '100%',
@@ -9,17 +12,22 @@ const containerStyle = {
 };
 
 type GoogleMapSectionProps = {
+  listings: ListingType[];
   coordinates: {
     lat: number;
     lng: number;
   } | null;
 };
 
-const GoogleMapSection = ({ coordinates }: GoogleMapSectionProps) => {
-  const [map, setMap] = React.useState<google.maps.Map | null>(null);
-  const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
-    lat: 37.7749,
-    lng: -122.4194,
+const GoogleMapSection = ({ coordinates, listings }: GoogleMapSectionProps) => {
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [selectedListing, setSelectedListing] = useState<ListingType | null>(
+    null
+  );
+
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
+    lat: 51.5072,
+    lng: 0.1276,
   });
 
   useEffect(() => {
@@ -32,17 +40,20 @@ const GoogleMapSection = ({ coordinates }: GoogleMapSectionProps) => {
     <div className="h-full w-full">
       <GoogleMap
         mapContainerStyle={containerStyle}
-        zoom={12}
+        zoom={17}
         center={coordinates || center}
         onLoad={setMap}
         onUnmount={() => setMap(null)}
-        options={{
-          zoomControl: true,
-          streetViewControl: false,
-          mapTypeControl: false,
-          fullscreenControl: true,
-        }}
-      />
+      >
+        {listings.map((listing, index) => (
+          <MarkerItem
+            key={index}
+            listing={listing}
+            selectedListing={selectedListing}
+            onSelect={setSelectedListing}
+          />
+        ))}
+      </GoogleMap>
     </div>
   );
 };

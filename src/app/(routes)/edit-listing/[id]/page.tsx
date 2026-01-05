@@ -32,6 +32,8 @@ import FileUpload from '../_components/FileUpload';
 import { Loader } from 'lucide-react';
 
 export type ListingType = {
+  id?: number;
+  title?: string;
   type: string;
   active?: boolean;
   propertyType: string;
@@ -49,6 +51,12 @@ export type ListingType = {
   profilePicture?: string;
   listingImages?: { url: string }[];
   address: string;
+  coordinates?:
+    | {
+        lat: number;
+        lng: number;
+      }
+    | undefined;
 };
 
 interface EditListingProps {
@@ -77,7 +85,6 @@ const EditListing = ({ params }: EditListingProps) => {
         .eq('id', resolvedParams.id);
 
       if (data && data.length > 0) {
-        console.log(data);
         setListing(data[0]);
       } else {
         router.replace('/');
@@ -133,10 +140,6 @@ const EditListing = ({ params }: EditListingProps) => {
         });
 
       if (data) {
-        console.log('Image uploaded successfully:', data);
-      }
-
-      if (data) {
         const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
         const { data, error } = await supabase
           .from('listingImages')
@@ -166,6 +169,7 @@ const EditListing = ({ params }: EditListingProps) => {
     if (data) {
       setIsLoading(false);
       setIsSavingAndPublishing(false);
+      router.push('/');
       toast.success('Listing published successfully!');
     }
 
@@ -197,6 +201,7 @@ const EditListing = ({ params }: EditListingProps) => {
           sellingPrice: listing?.sellingPrice || null,
           rentingPrice: listing?.rentingPrice || null,
           description: listing?.description || '',
+          title: listing?.title || '',
           profilePicture: user.user?.imageUrl || '',
           fullName: user.user?.fullName || '',
           address: listing?.address || '',
@@ -246,11 +251,8 @@ const EditListing = ({ params }: EditListingProps) => {
                       <SelectItem value="Detached House">
                         Detached House
                       </SelectItem>
-                      <SelectItem value="Bungalow">Bungalow</SelectItem>
+                      <SelectItem value="Studio">Studio</SelectItem>
                       <SelectItem value="Flat">Flat</SelectItem>
-                      <SelectItem value="Cottage">Cottage</SelectItem>
-                      <SelectItem value="Maisonette">Maisonette</SelectItem>
-                      <SelectItem value="Townhouse">Townhouse</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -345,43 +347,60 @@ const EditListing = ({ params }: EditListingProps) => {
                     type="number"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Tenure</h2>
-                  <Select
-                    name="tenure"
-                    onValueChange={(e) => setFieldValue('tenure', e)}
-                    value={values.tenure}
-                  >
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Select Tenure" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Freehold">Freehold</SelectItem>
-                      <SelectItem value="Leasehold">Leasehold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Selling Price (£)</h2>
-                  <Input
-                    onChange={handleChange}
-                    value={values.sellingPrice || ''}
-                    type="number"
-                    name="sellingPrice"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">
-                    Renting Price (Monthly)(£)
-                  </h2>
-                  <Input
-                    onChange={handleChange}
-                    value={values.rentingPrice || ''}
-                    type="number"
-                    name="rentingPrice"
-                    min="0"
-                  />
-                </div>
+                {values.type === 'Sell' && (
+                  <div className="flex flex-col gap-2">
+                    <h2 className="text-sm text-slate-500">Tenure</h2>
+                    <Select
+                      name="tenure"
+                      onValueChange={(e) => setFieldValue('tenure', e)}
+                      value={values.tenure}
+                    >
+                      <SelectTrigger className="w-[220px]">
+                        <SelectValue placeholder="Select Tenure" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Freehold">Freehold</SelectItem>
+                        <SelectItem value="Leasehold">Leasehold</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {values.type === 'Sell' ? (
+                  <div className="flex flex-col gap-2">
+                    <h2 className="text-sm text-slate-500">
+                      Selling Price (£)
+                    </h2>
+                    <Input
+                      onChange={handleChange}
+                      value={values.sellingPrice || ''}
+                      type="number"
+                      name="sellingPrice"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <h2 className="text-sm text-slate-500">
+                      Renting Price (Monthly)(£)
+                    </h2>
+                    <Input
+                      onChange={handleChange}
+                      value={values.rentingPrice || ''}
+                      type="number"
+                      name="rentingPrice"
+                      min="0"
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col gap-2 mt-8">
+                <h2 className="text-sm text-slate-500">Title</h2>
+                <Input
+                  onChange={handleChange}
+                  value={values.title || ''}
+                  maxLength={100}
+                  name="title"
+                />
               </div>
               <div className="flex flex-col gap-2 mt-8">
                 <h2 className="text-sm text-slate-500">Description</h2>
@@ -451,9 +470,7 @@ const EditListing = ({ params }: EditListingProps) => {
                       <AlertDialogAction
                         className="cursor-pointer"
                         onClick={() => {
-                          setIsSavingAndPublishing(true);
-                          values.active = true;
-                          handleSubmit();
+                          handlePublish();
                         }}
                       >
                         {isLoading ? (
