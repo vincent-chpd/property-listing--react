@@ -6,7 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { SignOutButton, useUser } from '@clerk/nextjs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import User from '../(routes)/user/[[...rest]]/page';
 
 const Header = () => {
   const path = usePathname();
@@ -53,13 +62,32 @@ const Header = () => {
           </Button>
         </Link>
         {isSignedIn ? (
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: '!w-11 !h-11',
-              },
-            }}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none border-none">
+              <Image
+                src={user?.imageUrl}
+                width={35}
+                height={35}
+                alt="User Avatar"
+                className="rounded-full w-full cursor-pointer "
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="mr-2 cursor-pointer">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link href="/user" className="cursor-pointer">
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <Link href="/user/my-listings">My listings</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <SignOutButton>Logout</SignOutButton>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <Link href="/sign-in">
             <Button variant="outline" className="cursor-pointer">

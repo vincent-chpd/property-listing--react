@@ -70,7 +70,7 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <Listing
           listings={listings}
@@ -79,7 +79,7 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
           setCoordinates={setCoordinates}
         />
       </div>
-      <div>
+      <div className="w-[48%] fixed top-34 right-0 mr-6">
         <GoogleMapSection coordinates={coordinates} listings={listings} />
       </div>
     </div>

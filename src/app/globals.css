@@ -51,7 +51,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #f17171;
+  --primary: #7e4ad4;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -130,4 +130,23 @@
     font-family: var(--poppins), sans-serif;
     @apply bg-background text-foreground;
   }
+}
+
+.cl-internal-mkizyn {
+  box-shadow: none;
+  height: 70vh;
+  width: 80vw;
+  border-radius: 0;
+}
+
+.cl-internal-15hkgn2 {
+  background: none;
+}
+
+.cl-internal-1pcqqbp {
+  background: none;
+}
+
+.cl-internal-1km134l {
+  border-radius: 0px;
 }

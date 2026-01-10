@@ -26,8 +26,8 @@ const GoogleMapSection = ({ coordinates, listings }: GoogleMapSectionProps) => {
   );
 
   const [center, setCenter] = useState<google.maps.LatLngLiteral>({
-    lat: 51.5072,
-    lng: 0.1276,
+    lat: 51.52,
+    lng: -0.12,
   });
 
   useEffect(() => {
@@ -37,25 +37,24 @@ const GoogleMapSection = ({ coordinates, listings }: GoogleMapSectionProps) => {
   }, [coordinates, map]);
 
   return (
-    <div className="h-full w-full">
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        zoom={17}
-        center={coordinates || center}
-        onLoad={setMap}
-        onUnmount={() => setMap(null)}
-        options={{ gestureHandling: 'greedy' }}
-      >
-        {listings.map((listing, index) => (
-          <MarkerItem
-            key={index}
-            listing={listing}
-            selectedListing={selectedListing}
-            onSelect={setSelectedListing}
-          />
-        ))}
-      </GoogleMap>
-    </div>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      zoom={12}
+      center={coordinates || center}
+      onLoad={setMap}
+      onUnmount={() => setMap(null)}
+      options={{ gestureHandling: 'greedy' }}
+    >
+      {listings.map((listing, index) => (
+        <MarkerItem
+          key={index}
+          listing={listing}
+          selectedListing={selectedListing}
+          onSelect={setSelectedListing}
+          map={map}
+        />
+      ))}
+    </GoogleMap>
   );
 };
 
