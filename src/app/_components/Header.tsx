@@ -15,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import User from '../(routes)/user/[[...rest]]/page';
 
 const Header = () => {
   const path = usePathname();
@@ -24,7 +23,7 @@ const Header = () => {
   useEffect(() => {}, [path]);
 
   return (
-    <div className="pt-6 px-10 flex justify-between shadow-sm fixed top-0 w-full z-10 bg-white">
+    <div className="py-4 px-10 flex justify-between shadow-sm fixed top-0 w-full z-10 bg-white">
       <div className="flex items-center gap-10">
         <Link href={'/'}>
           <Image src={logo} alt="Logo" width={150} height={150} />
@@ -49,10 +48,15 @@ const Header = () => {
               For Sales
             </li>
           </Link>
-
-          <li className="hover:text-primary font-medium text-sm cursor-pointer">
-            Agent Finder
-          </li>
+          <Link href={'/agent-finder'}>
+            <li
+              className={`hover:text-primary font-medium text-sm cursor-pointer py-4 ${
+                path === '/agent-finder' && 'text-primary font-semibold '
+              }`}
+            >
+              Agent Finder
+            </li>
+          </Link>
         </ul>
       </div>
       <div className="flex gap-2 items-center">
@@ -72,7 +76,7 @@ const Header = () => {
                 className="rounded-full w-full cursor-pointer "
               />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="mr-2 cursor-pointer">
+            <DropdownMenuContent className="mr-2">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
