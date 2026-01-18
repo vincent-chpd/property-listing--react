@@ -27,7 +27,7 @@ const Slider = ({ imageList }: SliderProps) => {
                       alt={`Listing Image ${index + 1}`}
                       width={800}
                       height={300}
-                      className="object-cover rounded-lg h-[300px] cursor-grab"
+                      className="object-cover rounded-lg h-[400px] w-[100vw] cursor-grab"
                     />
                   </CarouselItem>
                 ))}

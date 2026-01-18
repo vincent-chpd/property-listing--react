@@ -16,13 +16,13 @@ const Details = ({ listingDetails }: DetailsProps) => {
     <div className="my-6 flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="font-bold text-xl">
+          <h2 className="font-bold text-2xl">
             £
             {`${listingDetails.rentingPrice?.toLocaleString()} pcm` ||
               listingDetails.sellingPrice?.toLocaleString()}
           </h2>
-          <h2 className=" text-sm text-gray-500 flex gap-1 mt-2">
-            <MapPin className="h-4 w-4" />
+          <h2 className=" text-md text-gray-500 font-medium flex gap-1 mt-0">
+            <MapPin className="h-5 w-5" />
             {listingDetails.address}
           </h2>
         </div>
