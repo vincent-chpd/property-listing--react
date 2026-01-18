@@ -1,19 +1,13 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { Poppins } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import Provider from './Provider';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 
-const poppins = Poppins({
-  variable: '--poppins',
+const inter = Inter({
+  variable: '--inter',
   weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
   subsets: ['latin'],
 });
 
@@ -30,7 +24,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${poppins.variable} antialiased`}>
+        <body className={`${inter.variable} antialiased`}>
           <Provider>
             <Toaster position="top-right" />
             {children}

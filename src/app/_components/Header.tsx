@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import React, { useEffect } from 'react';
-import logo from '../../../public/logo.svg';
+import logo from '../../../public/logo-primary.png';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
@@ -23,10 +23,10 @@ const Header = () => {
   useEffect(() => {}, [path]);
 
   return (
-    <div className="py-4 px-10 flex justify-between shadow-sm fixed top-0 w-full z-10 bg-white">
+    <div className="px-10 flex justify-between shadow-sm fixed top-0 w-full z-10 bg-white">
       <div className="flex items-center gap-10">
         <Link href={'/'}>
-          <Image src={logo} alt="Logo" width={150} height={150} />
+          <Image src={logo} alt="Logo" width={80} height={70} />
         </Link>
         <ul className="hidden md:flex gap-10 justify-center items-center">
           <Link href={'/'}>
