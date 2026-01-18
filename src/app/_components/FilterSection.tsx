@@ -9,9 +9,9 @@ import {
 import { Bath, BedDouble, CarFront } from 'lucide-react';
 
 type FilterSectionProps = {
-  setBedCount: (value: number | null) => void;
-  setBathCount: (value: number | null) => void;
-  setParkingCount: (value: number | null) => void;
+  setBedCount: (value: number) => void;
+  setBathCount: (value: number) => void;
+  setParkingCount: (value: number) => void;
   setHomeType: (value: string) => void;
 };
 
@@ -29,25 +29,25 @@ const FilterSection = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="1">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <BedDouble className="h-5 w-5 text-primary" />
               1+{' '}
             </h2>
           </SelectItem>
           <SelectItem value="2">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <BedDouble className="h-5 w-5 text-primary" />
               2+{' '}
             </h2>
           </SelectItem>
           <SelectItem value="3">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <BedDouble className="h-5 w-5 text-primary" />
               3+{' '}
             </h2>
           </SelectItem>
           <SelectItem value="4">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <BedDouble className="h-5 w-5 text-primary" />
               4+{' '}
             </h2>
@@ -61,13 +61,13 @@ const FilterSection = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="1">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <Bath className="h-5 w-5 text-primary" />
               1+{' '}
             </h2>
           </SelectItem>
           <SelectItem value="2">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <Bath className="h-5 w-5 text-primary" />
               2+{' '}
             </h2>
@@ -79,7 +79,7 @@ const FilterSection = ({
             </h2>
           </SelectItem>
           <SelectItem value="4">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <Bath className="h-5 w-5 text-primary" />
               4+{' '}
             </h2>
@@ -93,12 +93,12 @@ const FilterSection = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="1">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <CarFront className="h-5 w-5 text-primary" />1{' '}
             </h2>
           </SelectItem>
           <SelectItem value="2+">
-            <h2 className="flex gap-2 text-xs">
+            <h2 className="flex gap-2 text-xs cursor-pointer">
               <CarFront className="h-5 w-5 text-primary items" />
               2+{' '}
             </h2>
@@ -114,7 +114,7 @@ const FilterSection = ({
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Home Type" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="cursor-pointer">
           <SelectItem value="all">All</SelectItem>
           <SelectItem value="flat">Flat</SelectItem>
           <SelectItem value="Semi-Detached House">

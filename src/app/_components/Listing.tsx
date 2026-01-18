@@ -1,17 +1,23 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import { ListingType } from '../(routes)/edit-listing/[id]/page';
 import Image from 'next/image';
 import { Bath, BedDouble, MapPin, Ruler, Search } from 'lucide-react';
 import GoogleAddressSearch from './GoogleAddressSearch';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import FilterSection from './FilterSection';
 
 type ListingProps = {
   listings: ListingType[];
   handleSearchClick: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   searchedAddress: (value: any) => void;
-  setCoordinates: (coords: { lat: number; lng: number } | null) => void;
+  setBedCount: (value: number) => void;
+  setBathCount: (value: number) => void;
+  setParkingCount: (value: number) => void;
+  setHomeType: (value: string) => void;
+  loading: boolean;
 };
 
 type Address = {
@@ -22,9 +28,19 @@ const Listing = ({
   listings,
   handleSearchClick,
   searchedAddress,
-  setCoordinates,
+  setBathCount,
+  setBedCount,
+  setParkingCount,
+  setHomeType,
+  loading,
 }: ListingProps) => {
-  const [address, setAddress] = React.useState<Address | null>(null);
+  const [address, setAddress] = useState<Address | null>(null);
+  const [tempAddress, setTempAddress] = useState<Address | null>(null);
+
+  const handleSearch = () => {
+    setAddress(tempAddress);
+    handleSearchClick();
+  };
 
   return (
     <div>
@@ -32,17 +48,19 @@ const Listing = ({
         <GoogleAddressSearch
           selectedAddress={(value) => {
             searchedAddress(value);
-            setAddress(value);
+            setTempAddress(value);
           }}
-          setCoordinates={setCoordinates}
         />
-        <Button
-          className="flex gap-2 cursor-pointer"
-          onClick={handleSearchClick}
-        >
+        <Button className="flex gap-2 cursor-pointer" onClick={handleSearch}>
           <Search className="h-4 w-4 " /> Search
         </Button>
       </div>
+      <FilterSection
+        setBedCount={setBedCount}
+        setBathCount={setBathCount}
+        setParkingCount={setParkingCount}
+        setHomeType={setHomeType}
+      />
 
       <div className="p-3">
         {address && (
@@ -56,7 +74,7 @@ const Listing = ({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {listings.length > 0
           ? listings.map((item: ListingType, index: number) => (
               <Link href={`/view-listing/${item.id}`} key={index}>
@@ -102,12 +120,15 @@ const Listing = ({
                 </div>
               </Link>
             ))
-          : [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
-              <div
-                key={index}
-                className="h-[230px] w-full bg-slate-200 animate-pulse rounded-lg"
-              />
-            ))}
+          : null}
+
+        {loading &&
+          [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
+            <div
+              key={index}
+              className="h-[230px] w-full bg-slate-200 animate-pulse rounded-lg"
+            />
+          ))}
       </div>
     </div>
   );

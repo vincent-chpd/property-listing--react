@@ -1,10 +1,7 @@
 'use client';
 import { MapPin } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import GooglePlacesAutocomplete, {
-  geocodeByAddress,
-  getLatLng,
-} from 'react-google-places-autocomplete';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 
 export type Address = {
   label: string;
@@ -18,12 +15,10 @@ export type Coordinates = {
 
 type GoogleAddressSearchProps = {
   selectedAddress: (address: Address | null) => void;
-  setCoordinates: (coordinates: Coordinates) => void;
 };
 
 const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
   selectedAddress,
-  setCoordinates,
 }) => {
   const [isClient, setIsClient] = useState(false);
 
@@ -44,11 +39,6 @@ const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
           className: 'w-full rounded-lg',
           onChange: (place) => {
             selectedAddress(place);
-            if (place) {
-              geocodeByAddress(place.label)
-                .then((results) => getLatLng(results[0]))
-                .then(({ lat, lng }) => setCoordinates({ lat, lng }));
-            }
           },
         }}
       />
