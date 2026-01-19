@@ -6,7 +6,13 @@ export default function Page() {
   return (
     <div>
       <SignUp />
-      <Image src={SignupImage} width={600} height={200} alt={'Home image'} />
+      <Image
+        src={SignupImage}
+        width={600}
+        height={200}
+        alt={'Home image'}
+        className="rounded-lg"
+      />
     </div>
   );
 }

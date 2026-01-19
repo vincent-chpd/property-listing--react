@@ -44,23 +44,25 @@ const Listing = ({
 
   return (
     <div>
-      <div className="p-3 flex gap-2 items-center">
-        <GoogleAddressSearch
-          selectedAddress={(value) => {
-            searchedAddress(value);
-            setTempAddress(value);
-          }}
+      <div className="p-3 flex flex-col">
+        <div className="flex gap-2 items-center">
+          <GoogleAddressSearch
+            selectedAddress={(value) => {
+              searchedAddress(value);
+              setTempAddress(value);
+            }}
+          />
+          <Button className="flex gap-2 cursor-pointer" onClick={handleSearch}>
+            <Search className="h-4 w-4 " /> Search
+          </Button>
+        </div>
+        <FilterSection
+          setBedCount={setBedCount}
+          setBathCount={setBathCount}
+          setParkingCount={setParkingCount}
+          setHomeType={setHomeType}
         />
-        <Button className="flex gap-2 cursor-pointer" onClick={handleSearch}>
-          <Search className="h-4 w-4 " /> Search
-        </Button>
       </div>
-      <FilterSection
-        setBedCount={setBedCount}
-        setBathCount={setBathCount}
-        setParkingCount={setParkingCount}
-        setHomeType={setHomeType}
-      />
 
       <div className="p-3">
         {address && (

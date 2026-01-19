@@ -23,8 +23,8 @@ const Header = () => {
   useEffect(() => {}, [path]);
 
   return (
-    <div className="px-10 flex justify-between shadow-sm fixed top-0 w-full z-10 bg-white">
-      <div className="flex items-center gap-10">
+    <div className="px-2 flex justify-between shadow-sm w-full fixed top-0  z-10 bg-white">
+      <div className="flex items-center gap-6">
         <Link href={'/'}>
           <Image src={logo} alt="Logo" width={80} height={70} />
         </Link>

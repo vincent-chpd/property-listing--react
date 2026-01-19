@@ -134,6 +134,7 @@ button {
   }
 }
 
+/* Clerk classes for custom styling*/
 .cl-internal-mkizyn {
   box-shadow: none;
   height: 70vh;
@@ -151,4 +152,54 @@ button {
 
 .cl-internal-1km134l {
   border-radius: 0px;
+}
+
+.cl-internal-p8bmz4 {
+  border: none;
+  box-shadow: none;
+  width: 100%;
+}
+
+.cl-internal-vorlia {
+  background: white;
+}
+
+.cl-internal-kjqg39 {
+  font-size: 28px;
+}
+
+.cl-internal-1opiqnp {
+  font-size: 16px;
+}
+
+.cl-internal-kd81fb {
+  font-size: 14px;
+}
+
+.cl-internal-1n3co50 {
+  font-size: 14px;
+}
+
+.cl-internal-xif0jh {
+  font-size: 12px;
+}
+
+.cl-formButtonPrimary {
+  background-color: #7e4ad4;
+}
+
+.cl-formButtonPrimary:hover {
+  background-color: #9875d0;
+}
+
+.cl-internal-ztsfnw {
+  font-size: 14px;
+}
+
+.cl-internal-1k7jtru {
+  background: none;
+}
+
+.cl-internal-d5pd3d {
+  border-radius: 0;
 }

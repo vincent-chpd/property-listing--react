@@ -43,7 +43,7 @@ const GoogleMapSection = ({ coordinates, listings }: GoogleMapSectionProps) => {
       center={coordinates || center}
       onLoad={setMap}
       onUnmount={() => setMap(null)}
-      options={{ gestureHandling: 'greedy' }}
+      options={{ gestureHandling: 'cooperative' }}
     >
       {listings.map((listing, index) => (
         <MarkerItem

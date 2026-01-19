@@ -15,6 +15,7 @@ export type Coordinates = {
 
 type GoogleAddressSearchProps = {
   selectedAddress: (address: Address | null) => void;
+  setCoordinates?: (coords: Coordinates) => void;
 };
 
 const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
