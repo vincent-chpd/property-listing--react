@@ -44,18 +44,28 @@ const Listing = ({
 
   return (
     <div>
-      <div className="p-3 flex flex-col">
+      {/* Search + filters */}
+      <div className="py-4 flex flex-col gap-3">
         <div className="flex gap-2 items-center">
-          <GoogleAddressSearch
-            selectedAddress={(value) => {
-              searchedAddress(value);
-              setTempAddress(value);
-            }}
-          />
-          <Button className="flex gap-2 cursor-pointer" onClick={handleSearch}>
-            <Search className="h-4 w-4 " /> Search
+          <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow bg-white">
+            <Search className="h-4 w-4 text-gray-400 shrink-0" />
+            <div className="flex-1">
+              <GoogleAddressSearch
+                selectedAddress={(value) => {
+                  searchedAddress(value);
+                  setTempAddress(value);
+                }}
+              />
+            </div>
+          </div>
+          <Button
+            onClick={handleSearch}
+            className="rounded-full shrink-0 cursor-pointer bg-primary hover:bg-primary/90"
+          >
+            Search
           </Button>
         </div>
+
         <FilterSection
           setBedCount={setBedCount}
           setBathCount={setBathCount}
@@ -64,72 +74,95 @@ const Listing = ({
         />
       </div>
 
-      <div className="p-3">
-        {address && (
-          <div>
-            <h2>
-              Found <span className="font-bold">{listings?.length}</span> Result
-              {listings.length > 1 ? 's' : ''} in{' '}
-              <span className="font-bold text-primary">{address.label}</span>
-            </h2>
-          </div>
-        )}
-      </div>
+      {/* Results count */}
+      {address && (
+        <p className="text-sm text-gray-500 mb-3">
+          <span className="font-semibold text-gray-900">{listings?.length}</span> result
+          {listings.length !== 1 ? 's' : ''} in{' '}
+          <span className="font-semibold text-primary">{address.label}</span>
+        </p>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-8 pb-16">
         {listings.length > 0
           ? listings.map((item: ListingType, index: number) => (
               <Link href={`/view-listing/${item.id}`} key={index}>
-                <div
-                  key={index}
-                  className="p-3 border-1 border-transparent hover:border-primary/30 cursor-pointer rounded-lg"
-                >
-                  <Image
-                    src={
-                      item.listingImages?.[0]?.url ||
-                      'https://khcnggknlyklpooymuog.supabase.co/storage/v1/object/public/listing-images/placeholder'
-                    }
-                    alt="Image of the listing"
-                    width={800}
-                    height={150}
-                    className="rounded-lg object-cover w-full h-50"
-                  />
-                  <div className="flex flex-col mt-2 gap-1">
-                    <h2 className="font-bold text-lg">
-                      £ {item.rentingPrice?.toLocaleString()}{' '}
-                      {item.type === 'Rent' && 'pcm'}
-                    </h2>
-                    <h2 className="flex gap-2 text-xs text-gray-400">
-                      <MapPin className="h-4 w-4" />
-                      {item.address}
-                    </h2>
+                <div className="group cursor-pointer">
+                  {/* Image */}
+                  <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-100">
+                    <Image
+                      src={
+                        item.listingImages?.[0]?.url ||
+                        'https://khcnggknlyklpooymuog.supabase.co/storage/v1/object/public/listing-images/placeholder'
+                      }
+                      alt="Listing image"
+                      fill
+                      className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                    />
+                    {item.type && (
+                      <span className="absolute top-3 left-3 bg-white text-gray-800 text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
+                        {item.type === 'Rent' ? 'For Rent' : 'For Sale'}
+                      </span>
+                    )}
+                  </div>
 
-                    <div className="flex gap-2 items-center justify-between mt-2">
-                      <h2 className="flex gap-2 text-sm bg-slate-200 rounded-sm p-2 items-center text-gray-600 w-full justify-center">
-                        <BedDouble className="h-4 w-4" />
-                        {item?.bedroom}
-                      </h2>
-                      <h2 className="flex gap-2 text-sm  bg-slate-200 rounded-sm w-full p-2 items-center text-gray-600 justify-center">
-                        <Bath className="h-4 w-4" />
-                        {item?.bathroom}
-                      </h2>
-                      <h2 className="flex gap-2 text-sm min-w-[110px] bg-slate-200 rounded-sm w-full p-2 items-center text-gray-600 justify-center">
-                        <Ruler className="h-4 w-4" />
-                        {item?.size} sq. ft
-                      </h2>
+                  {/* Info */}
+                  <div className="mt-2.5 flex flex-col gap-0.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold text-gray-900 text-sm line-clamp-1 flex-1">
+                        {item.title || item.address}
+                      </p>
                     </div>
+
+                    <p className="flex gap-1 items-center text-xs text-gray-400 line-clamp-1">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      {item.address}
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="flex gap-1 items-center text-xs text-gray-500">
+                        <BedDouble className="h-3.5 w-3.5" />
+                        {item?.bedroom ?? '—'} bed
+                      </span>
+                      <span className="text-gray-300">·</span>
+                      <span className="flex gap-1 items-center text-xs text-gray-500">
+                        <Bath className="h-3.5 w-3.5" />
+                        {item?.bathroom ?? '—'} bath
+                      </span>
+                      <span className="text-gray-300">·</span>
+                      <span className="flex gap-1 items-center text-xs text-gray-500">
+                        <Ruler className="h-3.5 w-3.5" />
+                        {item?.size ?? '—'} sq ft
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-sm text-gray-900">
+                      <span className="font-semibold">
+                        £{(item.rentingPrice ?? item.sellingPrice)?.toLocaleString()}
+                      </span>
+                      {item.type === 'Rent' && (
+                        <span className="font-normal text-gray-500"> / month</span>
+                      )}
+                    </p>
                   </div>
                 </div>
               </Link>
             ))
-          : null}
+          : !loading && (
+              <div className="col-span-full text-center py-20 text-gray-400">
+                No listings found. Try adjusting your filters.
+              </div>
+            )}
 
         {loading &&
-          [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
-            <div
-              key={index}
-              className="h-[230px] w-full bg-slate-200 animate-pulse rounded-lg"
-            />
+          [1, 2, 3, 4, 5, 6].map((_, index) => (
+            <div key={index} className="flex flex-col gap-2">
+              <div className="w-full aspect-square rounded-2xl bg-gray-200 animate-pulse" />
+              <div className="h-3.5 w-3/4 bg-gray-200 rounded animate-pulse" />
+              <div className="h-3 w-1/2 bg-gray-200 rounded animate-pulse" />
+              <div className="h-3.5 w-1/3 bg-gray-200 rounded animate-pulse" />
+            </div>
           ))}
       </div>
     </div>

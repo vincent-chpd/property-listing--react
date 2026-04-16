@@ -1,9 +1,9 @@
 'use client';
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React from 'react';
 import logo from '../../../public/logo-primary.png';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SignOutButton, useUser } from '@clerk/nextjs';
@@ -20,87 +20,84 @@ const Header = () => {
   const path = usePathname();
   const { user, isSignedIn } = useUser();
 
-  useEffect(() => {}, [path]);
-
   return (
-    <div className="px-2 flex justify-between shadow-sm w-full fixed top-0  z-10 bg-white">
-      <div className="flex items-center gap-6">
-        <Link href={'/'}>
-          <Image src={logo} alt="Logo" width={80} height={70} />
-        </Link>
-        <ul className="hidden md:flex gap-10 justify-center items-center">
-          <Link href={'/'}>
-            <li
-              className={`hover:text-primary font-medium text-sm cursor-pointer py-4 ${
-                path === '/' && 'text-primary font-semibold '
-              }`}
-            >
-              For Rent
-            </li>
-          </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between px-6 h-16 max-w-screen-2xl mx-auto">
 
-          <Link href={'/for-sale'}>
-            <li
-              className={`hover:text-primary font-medium text-sm cursor-pointer py-4 ${
-                path === '/for-sale' && 'text-primary font-semibold '
-              }`}
-            >
-              For Sales
-            </li>
-          </Link>
-          <Link href={'/agent-finder'}>
-            <li
-              className={`hover:text-primary font-medium text-sm cursor-pointer py-4 ${
-                path === '/agent-finder' && 'text-primary font-semibold '
-              }`}
-            >
-              Agent Finder
-            </li>
-          </Link>
-        </ul>
-      </div>
-      <div className="flex gap-2 items-center">
-        <Link href="/add-new-listing">
-          <Button className="cursor-pointer">
-            <Plus className="h-5 w-5" /> Post Your Ad
-          </Button>
+        {/* Logo */}
+        <Link href="/" className="shrink-0">
+          <Image src={logo} alt="Logo" width={80} height={50} />
         </Link>
-        {isSignedIn ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="outline-none border-none">
-              <Image
-                src={user?.imageUrl}
-                width={35}
-                height={35}
-                alt="User Avatar"
-                className="rounded-full w-full cursor-pointer "
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="mr-2">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link href="/user" className="cursor-pointer">
-                  Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <Link href="/user/my-listings">My listings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <SignOutButton>Logout</SignOutButton>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Link href="/sign-in">
-            <Button variant="outline" className="cursor-pointer">
-              Login
+
+        {/* Nav links – hidden on mobile */}
+        <nav className="hidden md:flex items-center gap-1">
+          <Link
+            href="/"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-gray-100 ${
+              path === '/' ? 'text-primary font-semibold' : 'text-gray-600'
+            }`}
+          >
+            For Rent
+          </Link>
+          <Link
+            href="/for-sale"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-gray-100 ${
+              path === '/for-sale' ? 'text-primary font-semibold' : 'text-gray-600'
+            }`}
+          >
+            For Sale
+          </Link>
+          <Link
+            href="/agent-finder"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-gray-100 ${
+              path === '/agent-finder' ? 'text-primary font-semibold' : 'text-gray-600'
+            }`}
+          >
+            Agent Finder
+          </Link>
+        </nav>
+
+        {/* Right actions */}
+        <div className="flex items-center gap-2">
+          <Link href="/add-new-listing">
+            <Button size="sm" className="cursor-pointer hidden sm:flex gap-1">
+              <Plus className="h-4 w-4" /> Post Ad
             </Button>
           </Link>
-        )}
+
+          {isSignedIn ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none border-none">
+                <Image
+                  src={user?.imageUrl}
+                  width={34}
+                  height={34}
+                  alt="User Avatar"
+                  className="rounded-full cursor-pointer ring-2 ring-transparent hover:ring-primary/40 transition-all"
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="mr-2">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/user" className="cursor-pointer w-full">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/user/my-listings" className="cursor-pointer w-full">My listings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  <SignOutButton>Logout</SignOutButton>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/sign-in">
+              <Button variant="outline" size="sm" className="cursor-pointer">Login</Button>
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 

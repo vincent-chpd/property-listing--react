@@ -105,8 +105,9 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
   };
 
   return (
-    <div className=" grid grid-cols-1 md:grid-cols-2 gap-10">
-      <div>
+    <div className="flex">
+      {/* Listings panel */}
+      <div className="w-full md:w-1/2 px-6 min-h-screen">
         <Listing
           listings={listings}
           handleSearchClick={handleSearchClick}
@@ -118,7 +119,9 @@ const ListingMapView = ({ type }: ListingMapViewProps) => {
           loading={loading}
         />
       </div>
-      <div className="w-[48%] fixed top-34 right-0 mr-6">
+
+      {/* Sticky map panel */}
+      <div className="hidden md:block w-1/2 sticky top-16 h-[calc(100vh-64px)] p-3">
         <GoogleMapSection coordinates={coordinates} listings={listings} />
       </div>
     </div>

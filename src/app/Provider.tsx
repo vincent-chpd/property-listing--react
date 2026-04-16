@@ -20,7 +20,7 @@ const Provider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         }
       >
         <Header />
-        <div className="mt-32">{children}</div>
+        <div className="mt-20">{children}</div>
       </LoadScript>
     </div>
   );

@@ -7,8 +7,8 @@ import MarkerItem from './MarkerItem';
 
 const containerStyle = {
   width: '100%',
-  height: '80vh',
-  borderRadius: 10,
+  height: 'calc(100vh - 64px)',
+  borderRadius: 16,
 };
 
 type GoogleMapSectionProps = {
