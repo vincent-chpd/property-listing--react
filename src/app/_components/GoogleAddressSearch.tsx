@@ -20,6 +20,7 @@ type GoogleAddressSearchProps = {
 
 const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
   selectedAddress,
+  setCoordinates,
 }) => {
   const [isClient, setIsClient] = useState(false);
 
@@ -28,6 +29,20 @@ const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
     setIsClient(true);
   }, []);
   if (!isClient) return null;
+
+  const handleChange = (place: Address | null) => {
+    selectedAddress(place);
+
+    if (place && setCoordinates) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ placeId: (place.value as unknown as { place_id: string }).place_id }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const location = results[0].geometry.location;
+          setCoordinates({ lat: location.lat(), lng: location.lng() });
+        }
+      });
+    }
+  };
 
   return (
     <div className="flex items-center w-full">
@@ -38,9 +53,7 @@ const GoogleAddressSearch: React.FC<GoogleAddressSearchProps> = ({
           placeholder: 'Search for an address',
           isClearable: true,
           className: 'w-full rounded-lg',
-          onChange: (place) => {
-            selectedAddress(place);
-          },
+          onChange: handleChange,
         }}
       />
     </div>

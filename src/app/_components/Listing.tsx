@@ -4,7 +4,6 @@ import { ListingType } from '../(routes)/edit-listing/[id]/page';
 import Image from 'next/image';
 import { Bath, BedDouble, MapPin, Ruler, Search } from 'lucide-react';
 import GoogleAddressSearch from './GoogleAddressSearch';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import FilterSection from './FilterSection';
 
@@ -46,24 +45,16 @@ const Listing = ({
     <div>
       {/* Search + filters */}
       <div className="py-4 flex flex-col gap-3">
-        <div className="flex gap-2 items-center">
-          <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow bg-white">
-            <Search className="h-4 w-4 text-gray-400 shrink-0" />
-            <div className="flex-1">
-              <GoogleAddressSearch
-                selectedAddress={(value) => {
-                  searchedAddress(value);
-                  setTempAddress(value);
-                }}
-              />
-            </div>
+        <div className="flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow bg-white">
+          <Search className="h-4 w-4 text-gray-400 shrink-0" />
+          <div className="flex-1">
+            <GoogleAddressSearch
+              selectedAddress={(value) => {
+                searchedAddress(value);
+                setTempAddress(value);
+              }}
+            />
           </div>
-          <Button
-            onClick={handleSearch}
-            className="rounded-full shrink-0 cursor-pointer bg-primary hover:bg-primary/90"
-          >
-            Search
-          </Button>
         </div>
 
         <FilterSection
@@ -71,6 +62,7 @@ const Listing = ({
           setBathCount={setBathCount}
           setParkingCount={setParkingCount}
           setHomeType={setHomeType}
+          handleSearchClick={handleSearch}
         />
       </div>
 

@@ -99,8 +99,10 @@ const EditListing = ({ params }: EditListingProps) => {
   const onSubmitHandler = async (formValue: ListingType) => {
     setIsLoading(true);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { listingImages, id, ...rest } = formValue as ListingType & { listingImages?: unknown };
     const cleanValue = {
-      ...formValue,
+      ...rest,
       bedroom: formValue.bedroom ? Number(formValue.bedroom) : null,
       bathroom: formValue.bathroom ? Number(formValue.bathroom) : null,
       reception: formValue.reception ? Number(formValue.reception) : null,
@@ -120,11 +122,16 @@ const EditListing = ({ params }: EditListingProps) => {
       .eq('id', resolvedParams.id)
       .select();
 
-    if (data) {
-      toast.success('Listing updated successfully!');
+    if (error) {
+      toast.error('Error saving listing. Please try again.');
       setIsLoading(false);
       setIsSaving(false);
       setIsSavingAndPublishing(false);
+      return;
+    }
+
+    if (data) {
+      toast.success('Listing updated successfully!');
     }
 
     for (const image of images) {
@@ -160,13 +167,34 @@ const EditListing = ({ params }: EditListingProps) => {
     }
   };
 
-  const handlePublish = async () => {
+  const handlePublish = async (formValue: ListingType) => {
     setIsLoading(true);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { listingImages, id, ...rest } = formValue as ListingType & { listingImages?: unknown };
+    const cleanValue = {
+      ...rest,
+      bedroom: formValue.bedroom ? Number(formValue.bedroom) : null,
+      bathroom: formValue.bathroom ? Number(formValue.bathroom) : null,
+      reception: formValue.reception ? Number(formValue.reception) : null,
+      size: formValue.size ? Number(formValue.size) : null,
+      sellingPrice: formValue.sellingPrice ? Number(formValue.sellingPrice) : null,
+      rentingPrice: formValue.rentingPrice ? Number(formValue.rentingPrice) : null,
+      active: true,
+    };
+
     const { data, error } = await supabase
       .from('listing')
-      .update({ active: true })
+      .update(cleanValue)
       .eq('id', resolvedParams.id)
       .select();
+
+    if (error) {
+      setIsLoading(false);
+      setIsSavingAndPublishing(false);
+      toast.error('Error publishing listing. Please try again.');
+      return;
+    }
 
     if (data) {
       setIsLoading(false);
@@ -174,19 +202,24 @@ const EditListing = ({ params }: EditListingProps) => {
       router.push('/');
       toast.success('Listing published successfully!');
     }
-
-    if (error) {
-      setIsLoading(false);
-      setIsSavingAndPublishing(false);
-      toast.error('Error publishing listing. Please try again.');
-    }
   };
 
+  const fieldLabel = (text: string) => (
+    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">{text}</label>
+  );
+
+  const sectionTitle = (text: string) => (
+    <h3 className="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">{text}</h3>
+  );
+
   return (
-    <div className="px-10 md:px-36 my-10">
-      <h2 className="font-bold text-xl">
-        Enter more details about your listing
-      </h2>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">Edit Listing</h1>
+        <p className="text-sm text-gray-500 mt-1">{listing?.address}</p>
+      </div>
+
       <Formik
         enableReinitialize={true}
         initialValues={{
@@ -214,151 +247,89 @@ const EditListing = ({ params }: EditListingProps) => {
         }}
       >
         {({ values, handleChange, handleSubmit, setFieldValue }) => (
-          <form onSubmit={handleSubmit}>
-            <div className="p-8 rounded-lg shadow-md mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-3">
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Rent or Sell</h2>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+
+            {/* Section 1 — Listing basics */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              {sectionTitle('Listing details')}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Title')}
+                  <Input
+                    onChange={handleChange}
+                    value={values.title || ''}
+                    maxLength={100}
+                    name="title"
+                    placeholder="e.g. Bright 2-bed flat in Shoreditch"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Listing type')}
                   <RadioGroup
                     value={values.type}
                     onValueChange={(e) => setFieldValue('type', e)}
+                    className="flex gap-4 pt-1"
                   >
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2">
                       <RadioGroupItem value="Rent" id="rent" />
-                      <Label htmlFor="rent">Rent</Label>
+                      <Label htmlFor="rent" className="cursor-pointer">For Rent</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Sell" id="sell" />
-                      <Label htmlFor="sell">Sell</Label>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="Sale" id="sell" />
+                      <Label htmlFor="sell" className="cursor-pointer">For Sale</Label>
                     </div>
                   </RadioGroup>
                 </div>
-                <div className="flex flex-col gap-2 mt-10 md:mt-0">
-                  <h2 className="text-sm text-slate-500">Property Type</h2>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Property type')}
                   <Select
                     name="propertyType"
                     onValueChange={(e) => setFieldValue('propertyType', e)}
                     value={values.propertyType}
                   >
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Select Property Type" />
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select property type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Terraced House">
-                        Terraced House
-                      </SelectItem>
-                      <SelectItem value="Semi-Detached House">
-                        Semi-Detached House
-                      </SelectItem>
-                      <SelectItem value="Detached House">
-                        Detached House
-                      </SelectItem>
+                      <SelectItem value="Terraced House">Terraced House</SelectItem>
+                      <SelectItem value="Semi-Detached House">Semi-Detached House</SelectItem>
+                      <SelectItem value="Detached House">Detached House</SelectItem>
                       <SelectItem value="Studio">Studio</SelectItem>
                       <SelectItem value="Flat">Flat</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 mt-10 gap-8">
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Bedroom</h2>
-                  <Input
-                    onChange={handleChange}
-                    value={values.bedroom || ''}
-                    type="number"
-                    name="bedroom"
-                    min="0"
-                  />
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel(values.type === 'Sale' ? 'Selling price (£)' : 'Monthly rent (£)')}
+                  {values.type === 'Sale' ? (
+                    <Input
+                      onChange={handleChange}
+                      value={values.sellingPrice || ''}
+                      type="number"
+                      name="sellingPrice"
+                      placeholder="e.g. 450000"
+                    />
+                  ) : (
+                    <Input
+                      onChange={handleChange}
+                      value={values.rentingPrice || ''}
+                      type="number"
+                      name="rentingPrice"
+                      min="0"
+                      placeholder="e.g. 1800"
+                    />
+                  )}
                 </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Bathroom</h2>
-                  <Input
-                    onChange={handleChange}
-                    value={values.bathroom || ''}
-                    type="number"
-                    name="bathroom"
-                    min="0"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Reception</h2>
-                  <Input
-                    onChange={handleChange}
-                    value={values.reception || ''}
-                    type="number"
-                    name="reception"
-                    min="0"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 mt-10 gap-8">
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Parking</h2>
-                  <Select
-                    name="parking"
-                    onValueChange={(e) => setFieldValue('parking', e)}
-                    value={values.parking}
-                  >
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Please Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Garden</h2>
-                  <Select
-                    name="garden"
-                    onValueChange={(e) => setFieldValue('garden', e)}
-                    value={values.garden}
-                  >
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Please Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Balcony</h2>
-                  <Select
-                    name="balcony"
-                    onValueChange={(e) => setFieldValue('balcony', e)}
-                    value={values.balcony}
-                  >
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Please Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-sm text-slate-500">Size (Sq ft)</h2>
-                  <Input
-                    name="size"
-                    onChange={handleChange}
-                    value={values.size || ''}
-                    type="number"
-                  />
-                </div>
-                {values.type === 'Sell' && (
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-sm text-slate-500">Tenure</h2>
+                {values.type === 'Sale' && (
+                  <div className="flex flex-col gap-1.5">
+                    {fieldLabel('Tenure')}
                     <Select
                       name="tenure"
                       onValueChange={(e) => setFieldValue('tenure', e)}
                       value={values.tenure}
                     >
-                      <SelectTrigger className="w-[220px]">
-                        <SelectValue placeholder="Select Tenure" />
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select tenure" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Freehold">Freehold</SelectItem>
@@ -367,127 +338,117 @@ const EditListing = ({ params }: EditListingProps) => {
                     </Select>
                   </div>
                 )}
-
-                {values.type === 'Sell' ? (
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-sm text-slate-500">
-                      Selling Price (£)
-                    </h2>
-                    <Input
-                      onChange={handleChange}
-                      value={values.sellingPrice || ''}
-                      type="number"
-                      name="sellingPrice"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-sm text-slate-500">
-                      Renting Price (Monthly)(£)
-                    </h2>
-                    <Input
-                      onChange={handleChange}
-                      value={values.rentingPrice || ''}
-                      type="number"
-                      name="rentingPrice"
-                      min="0"
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-2 mt-8">
-                <h2 className="text-sm text-slate-500">Title</h2>
-                <Input
-                  onChange={handleChange}
-                  value={values.title || ''}
-                  maxLength={100}
-                  name="title"
-                />
-              </div>
-              <div className="flex flex-col gap-2 mt-8">
-                <h2 className="text-sm text-slate-500">Description</h2>
-                <Textarea
-                  onChange={handleChange}
-                  value={values.description || ''}
-                  rows={4}
-                  name="description"
-                />
-              </div>
-              <div className="mt-8">
-                <h2 className="font-lg text-gray-500 my-2">
-                  Upload Property Images
-                </h2>
-                <FileUpload
-                  setImages={(value) =>
-                    setImages(value ? Array.from(value) : [])
-                  }
-                  imageList={listing?.listingImages || []}
-                />
-              </div>
-              <div className="flex gap-4 justify-end">
-                <Button
-                  disabled={isLoading}
-                  onClick={() => {
-                    setIsSaving(true);
-                  }}
-                  type="submit"
-                  variant="outline"
-                  className="font-bold text-primary border-primary hover:text-primary hover:bg-primary/5"
-                >
-                  {isLoading && isSaving ? (
-                    <>
-                      <Loader className="animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save'
-                  )}
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      disabled={isLoading}
-                      type="button"
-                      className="font-bold cursor-pointer"
-                    >
-                      {isLoading && isSavingAndPublishing ? (
-                        <>
-                          <Loader className="animate-spin" />
-                          Publishing...
-                        </>
-                      ) : (
-                        'Save & Publish'
-                      )}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Ready to publish?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Do you really want to publish this listing?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="cursor-pointer"
-                        onClick={() => {
-                          handlePublish();
-                        }}
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader className="animate-spin" /> Publishing
-                          </>
-                        ) : (
-                          'Publish'
-                        )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
               </div>
             </div>
+
+            {/* Section 2 — Property details */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              {sectionTitle('Property details')}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Bedrooms')}
+                  <Input onChange={handleChange} value={values.bedroom || ''} type="number" name="bedroom" min="0" placeholder="0" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Bathrooms')}
+                  <Input onChange={handleChange} value={values.bathroom || ''} type="number" name="bathroom" min="0" placeholder="0" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Receptions')}
+                  <Input onChange={handleChange} value={values.reception || ''} type="number" name="reception" min="0" placeholder="0" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Size (sq ft)')}
+                  <Input onChange={handleChange} value={values.size || ''} type="number" name="size" placeholder="0" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Parking')}
+                  <Select name="parking" onValueChange={(e) => setFieldValue('parking', e)} value={values.parking}>
+                    <SelectTrigger className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Yes">Yes</SelectItem>
+                      <SelectItem value="No">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Garden')}
+                  <Select name="garden" onValueChange={(e) => setFieldValue('garden', e)} value={values.garden}>
+                    <SelectTrigger className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Yes">Yes</SelectItem>
+                      <SelectItem value="No">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {fieldLabel('Balcony')}
+                  <Select name="balcony" onValueChange={(e) => setFieldValue('balcony', e)} value={values.balcony}>
+                    <SelectTrigger className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Yes">Yes</SelectItem>
+                      <SelectItem value="No">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3 — Description */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              {sectionTitle('Description')}
+              <Textarea
+                onChange={handleChange}
+                value={values.description || ''}
+                rows={5}
+                name="description"
+                placeholder="Describe the property — location highlights, nearby transport, condition, etc."
+              />
+            </div>
+
+            {/* Section 4 — Images */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              {sectionTitle('Photos')}
+              <FileUpload
+                setImages={(value) => setImages(value ? Array.from(value) : [])}
+                imageList={listing?.listingImages || []}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 justify-end pb-10">
+              <Button
+                disabled={isLoading}
+                onClick={() => setIsSaving(true)}
+                type="submit"
+                variant="outline"
+                className="font-semibold text-primary border-primary hover:text-primary hover:bg-primary/5 cursor-pointer"
+              >
+                {isLoading && isSaving ? <><Loader className="animate-spin h-4 w-4 mr-1" />Saving...</> : 'Save draft'}
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button disabled={isLoading} type="button" className="font-semibold cursor-pointer">
+                    {isLoading && isSavingAndPublishing ? <><Loader className="animate-spin h-4 w-4 mr-1" />Publishing...</> : 'Save & Publish'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Ready to publish?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Your listing will be visible to everyone. You can unpublish it at any time.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="cursor-pointer" onClick={() => handlePublish(values)}>
+                      {isLoading ? <><Loader className="animate-spin h-4 w-4 mr-1" />Publishing</> : 'Publish'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+
           </form>
         )}
       </Formik>

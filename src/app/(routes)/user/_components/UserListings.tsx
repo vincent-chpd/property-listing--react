@@ -33,69 +33,83 @@ const UserListings = () => {
   }, [user]);
 
   return (
-    <div className="my-5 w-full">
-      <h2>Manage your listings</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-3">
+    <div className="py-4 w-full">
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h2 className="font-semibold text-gray-900">My listings</h2>
+          <p className="text-xs text-gray-400 mt-0.5">{listing?.length ?? 0} total</p>
+        </div>
+        <Link href="/add-new-listing">
+          <Button size="sm" className="cursor-pointer">+ New listing</Button>
+        </Link>
+      </div>
+
+      {listing && listing.length === 0 && (
+        <div className="text-center py-16 text-gray-400 text-sm border border-dashed border-gray-200 rounded-xl">
+          No listings yet. Create your first one.
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {listing &&
           listing.map((item, index) => (
-            <div
-              key={index}
-              className="p-3 border-2 border-gray-100  rounded-lg relative"
-            >
-              <h2 className="bg-primary text-white w-fit absolute px-2 py-1 text-sm m-1 rounded-lg">
-                {item.active ? 'Published' : 'Draft'}
-              </h2>
-              <Image
-                src={
-                  item.listingImages?.[0]?.url ||
-                  'https://khcnggknlyklpooymuog.supabase.co/storage/v1/object/public/listing-images/placeholder'
-                }
-                alt="Image of the listing"
-                width={800}
-                height={150}
-                className="rounded-lg object-cover w-full h-50"
-              />
-              <div className="flex flex-col mt-2 gap-1">
-                <h2 className="font-bold text-lg">
-                  £ {item.rentingPrice?.toLocaleString()}{' '}
-                  {item.type === 'Rent' && 'pcm'}
-                </h2>
-                <h2 className="flex gap-2 text-xs text-gray-400">
-                  <MapPin className="h-4 w-4" />
-                  {item.address}
-                </h2>
+            <div key={index} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+              {/* Image */}
+              <div className="relative w-full aspect-video bg-gray-100">
+                <Image
+                  src={
+                    item.listingImages?.[0]?.url ||
+                    'https://khcnggknlyklpooymuog.supabase.co/storage/v1/object/public/listing-images/placeholder'
+                  }
+                  alt="Listing image"
+                  fill
+                  className="object-cover"
+                />
+                <span className={`absolute top-2.5 left-2.5 text-xs font-semibold px-2 py-0.5 rounded-full ${item.active ? 'bg-green-500 text-white' : 'bg-gray-800 text-white'}`}>
+                  {item.active ? 'Published' : 'Draft'}
+                </span>
+              </div>
 
-                <div className="flex gap-2 items-center justify-between mt-2">
-                  <h2 className="flex gap-2 text-sm bg-slate-200 rounded-sm p-2 items-center text-gray-600 w-full justify-center">
-                    <BedDouble className="h-4 w-4" />
-                    {item?.bedroom}
-                  </h2>
-                  <h2 className="flex gap-2 text-sm  bg-slate-200 rounded-sm w-full p-2 items-center text-gray-600 justify-center">
-                    <Bath className="h-4 w-4" />
-                    {item?.bathroom}
-                  </h2>
-                  <h2 className="flex gap-2 text-sm min-w-[110px] bg-slate-200 rounded-sm w-full p-2 items-center text-gray-600 justify-center">
-                    <Ruler className="h-4 w-4" />
-                    {item?.size}
-                  </h2>
+              {/* Info */}
+              <div className="p-4 flex flex-col gap-2">
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm line-clamp-1">
+                    {item.title || item.address}
+                  </p>
+                  <p className="flex items-center gap-1 text-xs text-gray-400 mt-0.5 line-clamp-1">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    {item.address}
+                  </p>
                 </div>
 
-                <div className="flex gap-2 mt-3">
-                  <Button
-                    variant={'outline'}
-                    className="flex-1"
-                    size="sm"
-                    asChild
-                  >
+                <p className="text-sm font-semibold text-gray-900">
+                  £{(item.rentingPrice ?? item.sellingPrice)?.toLocaleString() ?? '—'}
+                  {item.type === 'Rent' && <span className="font-normal text-gray-400"> /mo</span>}
+                </p>
+
+                <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <BedDouble className="h-3.5 w-3.5" />{item?.bedroom ?? '—'} bed
+                  </span>
+                  <span className="text-gray-300">·</span>
+                  <span className="flex items-center gap-1">
+                    <Bath className="h-3.5 w-3.5" />{item?.bathroom ?? '—'} bath
+                  </span>
+                  <span className="text-gray-300">·</span>
+                  <span className="flex items-center gap-1">
+                    <Ruler className="h-3.5 w-3.5" />{item?.size ?? '—'} sq ft
+                  </span>
+                </div>
+
+                <div className="flex gap-2 mt-1 pt-3 border-t border-gray-100">
+                  <Button variant="outline" size="sm" className="flex-1 cursor-pointer" asChild>
                     <Link href={`/view-listing/${item.id}`}>View</Link>
                   </Button>
-
-                  <Button className="flex-3" size="sm">
+                  <Button size="sm" className="flex-1 cursor-pointer" asChild>
                     <Link href={`/edit-listing/${item.id}`}>Edit</Link>
                   </Button>
-
-                  <Button size="sm" variant={'destructive'}>
-                    <Trash />
+                  <Button size="sm" variant="destructive" className="cursor-pointer">
+                    <Trash className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
