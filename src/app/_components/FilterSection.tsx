@@ -39,10 +39,7 @@ const FilterSection = ({
   handleSearchClick,
 }: FilterSectionProps) => {
   return (
-    <div className="flex flex-col gap-3 mt-1">
-      {/* Property type */}
-
-      {/* Beds / Baths / Parking row */}
+    <div className="flex flex-col gap-3 mt-1 ">
       <div className="flex gap-3">
       <div className="flex items-center gap-2">
         <Home className="h-4 w-4 text-gray-400 shrink-0" />
@@ -80,7 +77,6 @@ const FilterSection = ({
         </div>
       </div>
 
-      {/* Search button */}
       <Button
         onClick={handleSearchClick}
         className="w-full rounded-full cursor-pointer bg-primary hover:bg-primary/90 flex items-center gap-2"

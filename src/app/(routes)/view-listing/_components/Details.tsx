@@ -18,8 +18,9 @@ const Details = ({ listingDetails }: DetailsProps) => {
         <div>
           <h2 className="font-bold text-2xl">
             £
-            {`${listingDetails.rentingPrice?.toLocaleString()} pcm` ||
-              listingDetails.sellingPrice?.toLocaleString()}
+            {listingDetails.rentingPrice
+              ? `${listingDetails.rentingPrice.toLocaleString()} pcm`
+              : listingDetails.sellingPrice?.toLocaleString()}
           </h2>
           <h2 className=" text-md text-gray-500 font-medium flex gap-1 mt-0">
             <MapPin className="h-5 w-5" />

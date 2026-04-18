@@ -28,17 +28,18 @@ const ViewListing = ({ params }: ViewListingProps) => {
       .eq('id', resolvedParams.id)
       .eq('active', true);
 
-    if (data) {
-      setListingDetails(data[0]);
+
+      if (data) {
+        setListingDetails(data[0]);
     }
 
     if (error) {
-      console.log('Error fetching listing details:', error);
+      console.error('Error fetching listing details:', error);
     }
   };
 
   return (
-    <div className="px-4 md:px-100">
+    <div className="px-4 md:px-16 max-w-7xl mx-auto">
       <div className="flex justify-between items-center gap-1">
         <h1 className="text-2xl font-bold mb-4 mr-2">
           {listingDetails?.title}

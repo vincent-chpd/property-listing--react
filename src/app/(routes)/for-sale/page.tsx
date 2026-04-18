@@ -2,7 +2,7 @@ import ListingMapView from '../../_components/ListingMapView';
 
 const forSale = () => {
   return (
-    <div className="px-10">
+    <div>
       <ListingMapView type="Sale" />
     </div>
   );

@@ -21,7 +21,7 @@ const Header = () => {
   const { user, isSignedIn } = useUser();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+    <header className="mb-8 fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between px-6 h-16 max-w-screen-2xl mx-auto">
 
         {/* Logo */}
@@ -88,6 +88,18 @@ const Header = () => {
                 <DropdownMenuItem className="cursor-pointer">
                   <SignOutButton>Logout</SignOutButton>
                 </DropdownMenuItem>
+                <div className="md:hidden">
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/" className="cursor-pointer w-full">For Rent</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/for-sale" className="cursor-pointer w-full">For Sale</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/agent-finder" className="cursor-pointer w-full">Agent Finder</Link>
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

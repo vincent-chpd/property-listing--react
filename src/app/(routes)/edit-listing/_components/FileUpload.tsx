@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React, { useState } from 'react'
 
 type FileUploadProps = {
@@ -37,30 +36,26 @@ const FileUpload = ({setImages, imageList} :FileUploadProps ) => {
           />
         </label>
       </div>
-      <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10 gap-y-3 mt=-3'>
+      <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10 gap-y-3'>
         {imagePrewiew.map((image, index) => (
-          <div key={index}>
-            <Image
-              src={image}
-              width={80}
-              height={80}
-              className='rounded-lg object-cover h-[80px] w-[80px]'
-              alt={`image-${index}`}
-            />
-          </div>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={index}
+            src={image}
+            className='rounded-lg object-cover h-[80px] w-[80px]'
+            alt={`preview-${index}`}
+          />
         ))}
       </div>
-      <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10 gap-y-3 mt=-3'>
-        { imageList && imageList.map((image, index) => (
-          <div key={index}>
-            <Image
-              src={image?.url}
-              width={80}
-              height={80}
-              className='rounded-lg object-cover h-[80px] w-[80px]'
-              alt={`image-${index}`}
-            />
-          </div>
+      <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10 gap-y-3'>
+        {imageList && imageList.map((image, index) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={index}
+            src={image?.url}
+            className='rounded-lg object-cover h-[80px] w-[80px]'
+            alt={`image-${index}`}
+          />
         ))}
       </div>
     </div>

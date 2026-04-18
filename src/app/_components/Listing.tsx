@@ -44,8 +44,8 @@ const Listing = ({
   return (
     <div>
       {/* Search + filters */}
-      <div className="py-4 flex flex-col gap-3">
-        <div className="flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow bg-white">
+      <div className="py-4 flex flex-col gap-3 border-gray-200 border-2 rounded-lg px-4 shadow-sm mb-4">
+        <div className="flex items-center gap-2 bg-white">
           <Search className="h-4 w-4 text-gray-400 shrink-0" />
           <div className="flex-1">
             <GoogleAddressSearch

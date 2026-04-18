@@ -2,7 +2,7 @@ import ListingMapView from './_components/ListingMapView';
 
 export default function Home() {
   return (
-    <div>
+    <div >
       <ListingMapView type="Rent" />
     </div>
   );

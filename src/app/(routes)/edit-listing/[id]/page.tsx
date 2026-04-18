@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, use, useState } from 'react';
+import React, { useEffect, use, useState, useRef } from 'react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
@@ -69,10 +69,9 @@ const EditListing = ({ params }: EditListingProps) => {
   const [listing, setListing] = useState<ListingType | null>(null);
   const user = useUser();
   const router = useRouter();
-  const [images, setImages] = useState<File[]>([]);
+  const imagesRef = useRef<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isSavingAndPublishing, setIsSavingAndPublishing] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
 
   const resolvedParams = use(params);
 
@@ -96,8 +95,9 @@ const EditListing = ({ params }: EditListingProps) => {
     verifyUserRecord();
   }, [user.user, user.isSignedIn, resolvedParams, router]);
 
-  const onSubmitHandler = async (formValue: ListingType) => {
-    setIsLoading(true);
+
+  const saveDraft = async (formValue: ListingType) => {
+    setIsSavingDraft(true);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { listingImages, id, ...rest } = formValue as ListingType & { listingImages?: unknown };
@@ -107,64 +107,55 @@ const EditListing = ({ params }: EditListingProps) => {
       bathroom: formValue.bathroom ? Number(formValue.bathroom) : null,
       reception: formValue.reception ? Number(formValue.reception) : null,
       size: formValue.size ? Number(formValue.size) : null,
-      sellingPrice: formValue.sellingPrice
-        ? Number(formValue.sellingPrice)
-        : null,
-      rentingPrice: formValue.rentingPrice
-        ? Number(formValue.rentingPrice)
-        : null,
-      active: formValue.active || false,
+      sellingPrice: formValue.sellingPrice ? Number(formValue.sellingPrice) : null,
+      rentingPrice: formValue.rentingPrice ? Number(formValue.rentingPrice) : null,
+      active: false,
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('listing')
       .update(cleanValue)
-      .eq('id', resolvedParams.id)
-      .select();
+      .eq('id', resolvedParams.id);
 
     if (error) {
-      toast.error('Error saving listing. Please try again.');
-      setIsLoading(false);
-      setIsSaving(false);
-      setIsSavingAndPublishing(false);
+      toast.error('Error saving draft. Please try again.');
+      setIsSavingDraft(false);
       return;
     }
 
-    if (data) {
-      toast.success('Listing updated successfully!');
-    }
+    await uploadImages();
+    setIsSavingDraft(false);
+    router.push('/user');
+    toast.success('Draft saved!');
+  };
 
-    for (const image of images) {
+  const uploadImages = async () => {
+    for (const image of imagesRef.current) {
       const file = image;
-
-      const fileName = Date.now().toString();
-
       const fileExtension = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExtension}`;
 
       const { data, error } = await supabase.storage
         .from('listing-images')
-        .upload(`${fileName}`, file, {
+        .upload(fileName, file, {
           contentType: `image/${fileExtension}`,
           upsert: false,
         });
 
+      if (error) {
+        toast.error(`Error uploading image. Please try again.`);
+        return false;
+      }
+
       if (data) {
         const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
-        const { data, error } = await supabase
+        await supabase
           .from('listingImages')
-          .insert([{ url: imageUrl, listing_id: resolvedParams.id }])
+          .insert([{ url: imageUrl, listing_id: Number(resolvedParams.id) }])
           .select();
       }
-
-      if (error) {
-        toast.error(`Error uploading image ${fileName}. Please try again.`);
-        return;
-      }
-
-      setIsLoading(false);
-      setIsSaving(false);
-      setIsSavingAndPublishing(false);
     }
+    return true;
   };
 
   const handlePublish = async (formValue: ListingType) => {
@@ -191,16 +182,17 @@ const EditListing = ({ params }: EditListingProps) => {
 
     if (error) {
       setIsLoading(false);
-      setIsSavingAndPublishing(false);
       toast.error('Error publishing listing. Please try again.');
       return;
     }
 
     if (data) {
+      const uploaded = await uploadImages();
       setIsLoading(false);
-      setIsSavingAndPublishing(false);
-      router.push('/');
-      toast.success('Listing published successfully!');
+      if (uploaded) {
+        router.push('/');
+        toast.success('Listing published successfully!');
+      }
     }
   };
 
@@ -410,7 +402,7 @@ const EditListing = ({ params }: EditListingProps) => {
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               {sectionTitle('Photos')}
               <FileUpload
-                setImages={(value) => setImages(value ? Array.from(value) : [])}
+                setImages={(value) => { imagesRef.current = value ? Array.from(value) : []; }}
                 imageList={listing?.listingImages || []}
               />
             </div>
@@ -418,18 +410,18 @@ const EditListing = ({ params }: EditListingProps) => {
             {/* Actions */}
             <div className="flex gap-3 justify-end pb-10">
               <Button
-                disabled={isLoading}
-                onClick={() => setIsSaving(true)}
-                type="submit"
+                disabled={isSavingDraft || isLoading}
+                onClick={() => saveDraft(values)}
+                type="button"
                 variant="outline"
-                className="font-semibold text-primary border-primary hover:text-primary hover:bg-primary/5 cursor-pointer"
+                className="font-semibold cursor-pointer"
               >
-                {isLoading && isSaving ? <><Loader className="animate-spin h-4 w-4 mr-1" />Saving...</> : 'Save draft'}
+                {isSavingDraft ? <><Loader className="animate-spin h-4 w-4 mr-1" />Saving...</> : 'Save as draft'}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button disabled={isLoading} type="button" className="font-semibold cursor-pointer">
-                    {isLoading && isSavingAndPublishing ? <><Loader className="animate-spin h-4 w-4 mr-1" />Publishing...</> : 'Save & Publish'}
+                    Publish listing
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -442,7 +434,7 @@ const EditListing = ({ params }: EditListingProps) => {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction className="cursor-pointer" onClick={() => handlePublish(values)}>
-                      {isLoading ? <><Loader className="animate-spin h-4 w-4 mr-1" />Publishing</> : 'Publish'}
+                      {isLoading ? <><Loader className="animate-spin h-4 w-4 mr-1" />Publishing...</> : 'Publish'}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
