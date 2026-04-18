@@ -65,7 +65,7 @@ const UserListings = () => {
                   fill
                   className="object-cover"
                 />
-                <span className={`absolute top-2.5 left-2.5 text-xs font-semibold px-2 py-0.5 rounded-full ${item.active ? 'bg-green-500 text-white' : 'bg-gray-800 text-white'}`}>
+                <span className={`absolute top-2.5 left-2.5 text-xs font-semibold px-2 py-0.5 rounded-full ${item.active ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}>
                   {item.active ? 'Published' : 'Draft'}
                 </span>
               </div>

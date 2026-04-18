@@ -125,7 +125,7 @@ const EditListing = ({ params }: EditListingProps) => {
 
     await uploadImages();
     setIsSavingDraft(false);
-    router.push('/user');
+    router.push('/user/my-listings');
     toast.success('Draft saved!');
   };
 
@@ -190,7 +190,7 @@ const EditListing = ({ params }: EditListingProps) => {
       const uploaded = await uploadImages();
       setIsLoading(false);
       if (uploaded) {
-        router.push('/');
+        router.push('/user/my-listings');
         toast.success('Listing published successfully!');
       }
     }
@@ -234,12 +234,10 @@ const EditListing = ({ params }: EditListingProps) => {
           address: listing?.address || '',
           active: listing?.active || false,
         }}
-        onSubmit={(values) => {
-          onSubmitHandler(values);
-        }}
+        onSubmit={() => {}}
       >
-        {({ values, handleChange, handleSubmit, setFieldValue }) => (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {({ values, handleChange, setFieldValue }) => (
+          <form className="flex flex-col gap-6">
 
             {/* Section 1 — Listing basics */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">
