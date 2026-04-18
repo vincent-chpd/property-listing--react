@@ -14,9 +14,14 @@ const AddNewListing = () => {
     lat: number;
     lng: number;
   } | null>(null);
-  const { user } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const [loader, setLoader] = useState(false);
   const router = useRouter();
+
+  if (isLoaded && !isSignedIn) {
+    router.replace('/sign-in');
+    return null;
+  }
 
   const handleNext = async () => {
     if (selectedAddress && coordinates) {

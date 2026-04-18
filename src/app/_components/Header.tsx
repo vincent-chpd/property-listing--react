@@ -59,7 +59,7 @@ const Header = () => {
 
         {/* Right actions */}
         <div className="flex items-center gap-2">
-          <Link href="/add-new-listing">
+          <Link href={isSignedIn ? '/add-new-listing' : '/sign-in'}>
             <Button size="sm" className="cursor-pointer hidden sm:flex gap-1">
               <Plus className="h-4 w-4" /> Post Ad
             </Button>
