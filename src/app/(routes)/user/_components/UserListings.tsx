@@ -1,11 +1,23 @@
 'use client';
 import { supabase } from '@/utils/supabase/client';
+import { toast } from 'sonner';
 import { useUser } from '@clerk/nextjs';
 import { Bath, BedDouble, MapPin, Ruler, Trash } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { ListingType } from '../../../(routes)/edit-listing/[id]/page';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import Link from 'next/link';
 
 const UserListings = () => {
@@ -31,6 +43,18 @@ const UserListings = () => {
       GetUserListing();
     }
   }, [user]);
+
+  const deleteListing = async (id: number) => {
+    await supabase.from('listingImages').delete().eq('listing_id', id);
+
+    const { error } = await supabase.from('listing').delete().eq('id', id);
+    if (error) {
+      toast.error('Error deleting listing. Please try again.');
+      return;
+    }
+    setListing((prev) => prev?.filter((l) => l.id !== id) ?? []);
+    toast.success('Listing deleted.');
+  };
 
   return (
     <div className="py-4 w-full">
@@ -108,9 +132,27 @@ const UserListings = () => {
                   <Button size="sm" className="flex-1 cursor-pointer" asChild>
                     <Link href={`/edit-listing/${item.id}`}>Edit</Link>
                   </Button>
-                  <Button size="sm" variant="destructive" className="cursor-pointer">
-                    <Trash className="h-4 w-4" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="sm" variant="destructive" className="cursor-pointer">
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete listing?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. The listing will be permanently deleted.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => deleteListing(item.id!)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>

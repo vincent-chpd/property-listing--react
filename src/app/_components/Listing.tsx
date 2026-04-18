@@ -76,13 +76,13 @@ const Listing = ({
       )}
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-8 pb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-8 pb-16 auto-rows-fr">
         {listings.length > 0
           ? listings.map((item: ListingType, index: number) => (
               <Link href={`/view-listing/${item.id}`} key={index}>
-                <div className="group cursor-pointer">
+                <div className="group cursor-pointer flex flex-col h-full">
                   {/* Image */}
-                  <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-100">
+                  <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
                     <Image
                       src={
                         item.listingImages?.[0]?.url ||
@@ -100,14 +100,14 @@ const Listing = ({
                   </div>
 
                   {/* Info */}
-                  <div className="mt-2.5 flex flex-col gap-0.5">
+                  <div className="mt-2.5 flex flex-col gap-0.5 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-semibold text-gray-900 text-sm line-clamp-1 flex-1">
                         {item.title || item.address}
                       </p>
                     </div>
 
-                    <p className="flex gap-1 items-center text-xs text-gray-400 line-clamp-1">
+                    <p className="flex gap-1 items-start text-xs text-gray-400 line-clamp-1">
                       <MapPin className="h-3 w-3 shrink-0" />
                       {item.address}
                     </p>
@@ -129,7 +129,7 @@ const Listing = ({
                       </span>
                     </div>
 
-                    <p className="mt-1 text-sm text-gray-900">
+                    <p className="mt-auto pt-1 text-sm text-gray-900">
                       <span className="font-semibold">
                         £{(item.rentingPrice ?? item.sellingPrice)?.toLocaleString()}
                       </span>

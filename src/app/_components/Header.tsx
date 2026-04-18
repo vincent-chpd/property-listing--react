@@ -21,8 +21,8 @@ const Header = () => {
   const { user, isSignedIn } = useUser();
 
   return (
-    <header className="mb-8 fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between px-6 h-16 max-w-screen-2xl mx-auto">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between mb-2 px-6 h-16 max-w-screen-2xl mx-auto">
 
         {/* Logo */}
         <Link href="/" className="shrink-0">
